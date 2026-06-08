@@ -71,5 +71,4 @@ coverage/
 *.keystore
 *.jks
 
-# GSD Planning docs (local only)
-.planning/
+# GSD Planning docs (tracked for project continuity)
