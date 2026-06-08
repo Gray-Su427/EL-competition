@@ -23,7 +23,11 @@
 3. `curl http://localhost:8000/docs` 返回 200，Swagger UI 中 `/api/canteens` 端点可见
 4. Python shell 中 `session.execute(select(Dish)).scalars().first()` 返回对象，`.id` 为字符串 `"d1"`
 5. Pydantic 序列化验证：`CanteenOut.model_validate(canteen_obj).model_dump(by_alias=True)` 输出含 `openTime` 键（camelCase）
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Data Layer: ORM models + Pydantic contract + seed data
+- [ ] 01-02-PLAN.md — FastAPI app infrastructure: main.py + .env + requirements.txt
 
 ### Phase 2: Core Endpoints
 **Goal:** 前端 6 个数据读取端点全部可用，响应格式与前端 TypeScript types 完全匹配
@@ -54,6 +58,6 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/0 | Not started | - |
+| 1. Foundation | 0/2 | Planning done | - |
 | 2. Core Endpoints | 0/0 | Not started | - |
 | 3. AI Proxy | 0/0 | Not started | - |
