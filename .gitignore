@@ -71,4 +71,10 @@ coverage/
 *.keystore
 *.jks
 
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.db
+
 # GSD Planning docs (tracked for project continuity)
