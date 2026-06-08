@@ -70,3 +70,6 @@ coverage/
 # Misc
 *.keystore
 *.jks
+
+# GSD Planning docs (local only)
+.planning/
