@@ -45,11 +45,19 @@ Phase 3 (AI proxy) is independent of ORM — depends only on Phase 1 infra (life
 
 ### Open Items
 
-- Confirm frontend Vite port (5173 vs 3000) before CORS config
+- ~~Confirm frontend Vite port (5173 vs 3000) before CORS config~~ → **Resolved: 5173 (Vite default, no custom config)**
 - Inspect `aiService.ts` for exact MiMo response field path before implementing `routes/ai.py`
-- Confirm whether `GET /api/dishes/recommended` should return all 7 dishes or a subset
+- ~~Confirm whether `GET /api/dishes/recommended` should return all 7 dishes or a subset~~ → **Resolved: return all 7**
+
+### Phase 1 Decisions (from discuss-phase)
+
+- Seed data: copy frontend mock exactly (3 canteens + 7 dishes)
+- Project structure: multi-file (main/database/models/schemas/seed)
+- CORS: allow only `http://localhost:5173`
+- Fields: store ALL fields including emoji and distance
 
 ## Session Continuity
 
-Last action: Roadmap created
+Last action: Phase 1 context gathered
 Next action: `/gsd-plan-phase 1` — plan Foundation phase
+Resume file: `.planning/phases/01-foundation/01-CONTEXT.md`
