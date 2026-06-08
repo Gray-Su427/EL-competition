@@ -9,16 +9,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### 数据库基础
 
-- [ ] **DB-01**: SQLAlchemy ORM 定义 Canteen 模型（字符串 ID、名称、位置、窗口列表、营业时间、热度状态）
-- [ ] **DB-02**: SQLAlchemy ORM 定义 Dish 模型（字符串 ID、名称、食堂引用、价格、评分、标签、图片）
-- [ ] **DB-03**: SQLite 数据库引擎初始化，含 check_same_thread=False
-- [ ] **DB-04**: 种子数据脚本，幂等插入三食堂 + 菜品数据
+- [x] **DB-01**: SQLAlchemy ORM 定义 Canteen 模型（字符串 ID、名称、位置、窗口列表、营业时间、热度状态）
+- [x] **DB-02**: SQLAlchemy ORM 定义 Dish 模型（字符串 ID、名称、食堂引用、价格、评分、标签、图片）
+- [x] **DB-03**: SQLite 数据库引擎初始化，含 check_same_thread=False
+- [x] **DB-04**: 种子数据脚本，幂等插入三食堂 + 菜品数据
 
 ### 响应契约
 
-- [ ] **SCHEMA-01**: Pydantic v2 响应模型，camelCase 字段别名匹配前端 types.ts
-- [ ] **SCHEMA-02**: from_attributes=True 支持 ORM 对象直接序列化
-- [ ] **SCHEMA-03**: tags 字段从 JSON TEXT 列反序列化为 list[str]
+- [x] **SCHEMA-01**: Pydantic v2 响应模型，camelCase 字段别名匹配前端 types.ts
+- [x] **SCHEMA-02**: from_attributes=True 支持 ORM 对象直接序列化
+- [x] **SCHEMA-03**: tags 字段从 JSON TEXT 列反序列化为 list[str]
 
 ### 数据端点
 
@@ -35,10 +35,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### 基础设施
 
-- [ ] **INFRA-01**: CORS 中间件允许前端 localhost:5173 跨域请求
-- [ ] **INFRA-02**: .env 文件管理 MiMo API Key，python-dotenv 加载
-- [ ] **INFRA-03**: uvicorn 启动配置，端口 8000
-- [ ] **INFRA-04**: FastAPI lifespan 管理启动/关闭（seed + httpx client）
+- [x] **INFRA-01**: CORS 中间件允许前端 localhost:5173 跨域请求
+- [x] **INFRA-02**: .env 文件管理 MiMo API Key，python-dotenv 加载
+- [x] **INFRA-03**: uvicorn 启动配置，端口 8000
+- [x] **INFRA-04**: FastAPI lifespan 管理启动/关闭（seed + httpx client）
 
 ## v2 Requirements
 
@@ -68,13 +68,13 @@ Requirements for initial release. Each maps to roadmap phases.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DB-01 | Phase 1 | Pending |
-| DB-02 | Phase 1 | Pending |
-| DB-03 | Phase 1 | Pending |
-| DB-04 | Phase 1 | Pending |
-| SCHEMA-01 | Phase 1 | Pending |
-| SCHEMA-02 | Phase 1 | Pending |
-| SCHEMA-03 | Phase 1 | Pending |
+| DB-01 | Phase 1 | Complete |
+| DB-02 | Phase 1 | Complete |
+| DB-03 | Phase 1 | Complete |
+| DB-04 | Phase 1 | Complete |
+| SCHEMA-01 | Phase 1 | Complete |
+| SCHEMA-02 | Phase 1 | Complete |
+| SCHEMA-03 | Phase 1 | Complete |
 | API-01 | Phase 2 | Pending |
 | API-02 | Phase 2 | Pending |
 | API-03 | Phase 2 | Pending |
@@ -82,10 +82,10 @@ Requirements for initial release. Each maps to roadmap phases.
 | API-05 | Phase 2 | Pending |
 | API-06 | Phase 2 | Pending |
 | AI-01 | Phase 3 | Pending |
-| INFRA-01 | Phase 1 | Pending |
-| INFRA-02 | Phase 1 | Pending |
-| INFRA-03 | Phase 1 | Pending |
-| INFRA-04 | Phase 1 | Pending |
+| INFRA-01 | Phase 1 | Complete |
+| INFRA-02 | Phase 1 | Complete |
+| INFRA-03 | Phase 1 | Complete |
+| INFRA-04 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 18 total

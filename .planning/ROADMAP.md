@@ -6,7 +6,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation** — 数据库模型、Pydantic 契约、种子数据、基础设施配置
+- [x] **Phase 1: Foundation** — 数据库模型、Pydantic 契约、种子数据、基础设施配置 *(completed 2026-06-08)*
 - [ ] **Phase 2: Core Endpoints** — 全部 6 个数据读取 API 端点实现
 - [ ] **Phase 3: AI Proxy** — MiMo API 代理端点实现
 
@@ -26,8 +26,8 @@
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Data Layer: ORM models + Pydantic contract + seed data
-- [ ] 01-02-PLAN.md — FastAPI app infrastructure: main.py + .env + requirements.txt
+- [x] 01-01-PLAN.md — Data Layer: ORM models + Pydantic contract + seed data
+- [x] 01-02-PLAN.md — FastAPI app infrastructure: main.py + .env + requirements.txt
 
 ### Phase 2: Core Endpoints
 **Goal:** 前端 6 个数据读取端点全部可用，响应格式与前端 TypeScript types 完全匹配
@@ -58,6 +58,6 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/2 | Planning done | - |
+| 1. Foundation | 2/2 | Complete | 2026-06-08 |
 | 2. Core Endpoints | 0/0 | Not started | - |
 | 3. AI Proxy | 0/0 | Not started | - |
