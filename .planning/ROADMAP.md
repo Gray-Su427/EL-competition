@@ -40,8 +40,10 @@ Plans:
 3. `curl "http://localhost:8000/api/dishes/search?keyword=米饭"` 返回含匹配菜品的数组；`?keyword=` 空值返回空数组 `[]`
 4. `curl http://localhost:8000/api/suggestion/today` 返回含 `text` 字符串和 `highlightDish` 完整 Dish 对象的响应（非 ID，是完整嵌套对象）
 5. `curl http://localhost:8000/api/search/hot-keywords` 返回包含 10 个字符串的数组；`curl "http://localhost:8000/api/search/suggestions?keyword=面"` 返回最多 8 个联想词
-**Plans:** TBD
-**UI hint**: yes
+**Plans:** 1 plan
+
+Plans:
+- [ ] 02-01-PLAN.md — All 6 data endpoints: canteens, dishes, suggestion, search
 
 ### Phase 3: AI Proxy
 **Goal:** POST /api/ai/chat 端点可用，MiMo API Key 不暴露在前端
@@ -59,5 +61,5 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-06-08 |
-| 2. Core Endpoints | 0/0 | Not started | - |
+| 2. Core Endpoints | 0/1 | Planned | - |
 | 3. AI Proxy | 0/0 | Not started | - |
