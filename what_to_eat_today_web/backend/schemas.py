@@ -44,3 +44,14 @@ class DishOut(BaseModel):
         if isinstance(v, str):
             return json.loads(v)
         return v  # type: ignore[return-value]
+
+
+class TodaySuggestionOut(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+        from_attributes=True,
+    )
+
+    text: str
+    highlight_dish: DishOut
