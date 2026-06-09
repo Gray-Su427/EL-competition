@@ -3,15 +3,12 @@
 import json
 from collections import Counter
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Query
 
-from auth import get_current_user
 from database import SessionLocal
 from models import Dish
 
-router = APIRouter(
-    prefix="/api/search", tags=["search"], dependencies=[Depends(get_current_user)]
-)
+router = APIRouter(prefix="/api/search", tags=["search"])
 
 
 @router.get("/hot-keywords", response_model=list[str])

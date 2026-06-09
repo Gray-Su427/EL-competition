@@ -1,16 +1,13 @@
 """Dish recommendation and search endpoints."""
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Query
 from sqlalchemy import or_
 
-from auth import get_current_user
 from database import SessionLocal
 from models import Dish
 from schemas import DishOut
 
-router = APIRouter(
-    prefix="/api/dishes", tags=["dishes"], dependencies=[Depends(get_current_user)]
-)
+router = APIRouter(prefix="/api/dishes", tags=["dishes"])
 
 
 @router.get("/recommended", response_model=list[DishOut])

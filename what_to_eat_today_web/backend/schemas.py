@@ -55,32 +55,3 @@ class TodaySuggestionOut(BaseModel):
 
     text: str
     highlight_dish: DishOut
-
-
-class UserOut(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True,
-        from_attributes=True,
-    )
-
-    id: int
-    student_id: str
-    name: str
-    nickname: str | None
-    avatar_url: str | None
-    created_at: str
-
-
-class LoginRequest(BaseModel):
-    ticket: str
-
-
-class LoginResponse(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True,
-    )
-
-    token: str
-    user: UserOut

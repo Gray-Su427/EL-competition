@@ -4,16 +4,12 @@ import logging
 import os
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, model_validator
-
-from auth import get_current_user
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(
-    prefix="/api/ai", tags=["ai"], dependencies=[Depends(get_current_user)]
-)
+router = APIRouter(prefix="/api/ai", tags=["ai"])
 
 MIMO_API_URL = "https://token-plan-cn.xiaomimimo.com/v1/chat/completions"
 MIMO_MODEL = "mimo-v2.5-pro"
