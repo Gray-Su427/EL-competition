@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { chat, type ChatMessage } from '../services/aiService';
 
 interface DisplayMessage {
@@ -155,6 +156,8 @@ const AIChat: React.FC = () => {
                 <div className="ai-typing">
                   <span></span><span></span><span></span>
                 </div>
+              ) : msg.role === 'assistant' ? (
+                <ReactMarkdown>{msg.content}</ReactMarkdown>
               ) : (
                 msg.content
               )}
