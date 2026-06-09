@@ -7,7 +7,7 @@
 ## Phases
 
 - [x] **Phase 1: Foundation** — 数据库模型、Pydantic 契约、种子数据、基础设施配置 *(completed 2026-06-08)*
-- [ ] **Phase 2: Core Endpoints** — 全部 6 个数据读取 API 端点实现
+- [x] **Phase 2: Core Endpoints** — 全部 6 个数据读取 API 端点实现 *(completed 2026-06-09)*
 - [ ] **Phase 3: AI Proxy** — MiMo API 代理端点实现
 
 ## Phase Details
@@ -43,7 +43,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 02-01-PLAN.md — All 6 data endpoints: canteens, dishes, suggestion, search
+- [x] 02-01-PLAN.md — All 6 data endpoints: canteens, dishes, suggestion, search
 
 ### Phase 3: AI Proxy
 **Goal:** POST /api/ai/chat 端点可用，MiMo API Key 不暴露在前端
@@ -61,5 +61,5 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-06-08 |
-| 2. Core Endpoints | 0/1 | Planned | - |
+| 2. Core Endpoints | 1/1 | Complete | 2026-06-09 |
 | 3. AI Proxy | 0/0 | Not started | - |

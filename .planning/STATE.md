@@ -4,27 +4,27 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 2
 status: Ready
-last_updated: "2026-06-09T04:27:15.180Z"
+last_updated: "2026-06-09T04:57:44Z"
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 33
+  total_plans: 3
+  completed_plans: 3
+  percent: 67
 ---
 
 # Project State
 
 **Current Phase:** 2
-**Status:** Ready
-**Last Updated:** 2026-06-08
+**Status:** Complete
+**Last Updated:** 2026-06-09
 
 ## Phase Progress
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
 | 1 | Foundation | Complete | 2/2 |
-| 2 | Core Endpoints | Not Started | 0/0 |
+| 2 | Core Endpoints | Complete | 1/1 |
 | 3 | AI Proxy | Not Started | 0/0 |
 
 ## Project Reference
@@ -32,18 +32,19 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-08)
 
 **Core value:** 让学生快速找到想吃的菜——食堂、菜品、推荐数据必须准确可用
-**Current focus:** Phase 2 — Core Endpoints (ready to plan)
+**Current focus:** Phase 3 — AI Proxy (next)
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
 | Phases total | 3 |
-| Phases complete | 1 |
+| Phases complete | 2 |
 | Requirements mapped | 18/18 |
-| Plans complete | 2/2 |
+| Plans complete | 3/3 |
 | Plan 01-01 duration | 206s |
 | Plan 01-02 duration | 292s |
+| Plan 02-01 duration | 356s |
 
 ## Accumulated Context
 
@@ -58,6 +59,10 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 - Tags stored as JSON Text with field_validator deserialization
 - delete-then-insert strategy for seed idempotency
 - Added !.env.example exception to .gitignore (.env.* pattern was blocking template commit)
+- APIRouter prefix 包含完整资源路径（/api/dishes 而非仅 /dishes）
+- SessionLocal 使用 try/finally 手动关闭（非 Depends 注入，保持简单）
+- hot-keywords 使用 Counter 动态聚合标签频率
+- suggestions 端点使用 set 去重后切片至 max 8
 
 ### Build Order Constraint
 
@@ -79,6 +84,6 @@ Phase 3 (AI proxy) is independent of ORM — depends only on Phase 1 infra (life
 
 ## Session Continuity
 
-Last action: Phase 1 Foundation complete — verified 2026-06-08
-Next action: `/gsd-plan-phase 2` — plan Core Endpoints phase
-Resume file: .planning/phases/02-core-endpoints/02-CONTEXT.md
+Last action: Phase 2 Core Endpoints executed — all 6 data API endpoints verified
+Next action: `/gsd-execute-phase 3` — execute AI Proxy
+Resume file: .planning/phases/02-core-endpoints/02-01-SUMMARY.md

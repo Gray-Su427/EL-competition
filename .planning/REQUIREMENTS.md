@@ -22,12 +22,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### 数据端点
 
-- [ ] **API-01**: GET /api/canteens 返回食堂列表
-- [ ] **API-02**: GET /api/dishes/recommended 返回推荐菜品列表
-- [ ] **API-03**: GET /api/dishes/search?keyword=xxx 按关键词搜索菜品
-- [ ] **API-04**: GET /api/suggestion/today 返回今日推荐文案（含嵌套完整 Dish 对象）
-- [ ] **API-05**: GET /api/search/hot-keywords 返回热门搜索关键词列表
-- [ ] **API-06**: GET /api/search/suggestions?keyword=xxx 返回搜索联想词列表
+- [x] **API-01**: GET /api/canteens 返回食堂列表
+- [x] **API-02**: GET /api/dishes/recommended 返回推荐菜品列表
+- [x] **API-03**: GET /api/dishes/search?keyword=xxx 按关键词搜索菜品
+- [x] **API-04**: GET /api/suggestion/today 返回今日推荐文案（含嵌套完整 Dish 对象）
+- [x] **API-05**: GET /api/search/hot-keywords 返回热门搜索关键词列表
+- [x] **API-06**: GET /api/search/suggestions?keyword=xxx 返回搜索联想词列表
 
 ### AI 代理
 
@@ -75,12 +75,12 @@ Requirements for initial release. Each maps to roadmap phases.
 | SCHEMA-01 | Phase 1 | Complete |
 | SCHEMA-02 | Phase 1 | Complete |
 | SCHEMA-03 | Phase 1 | Complete |
-| API-01 | Phase 2 | Pending |
-| API-02 | Phase 2 | Pending |
-| API-03 | Phase 2 | Pending |
-| API-04 | Phase 2 | Pending |
-| API-05 | Phase 2 | Pending |
-| API-06 | Phase 2 | Pending |
+| API-01 | Phase 2 | Complete |
+| API-02 | Phase 2 | Complete |
+| API-03 | Phase 2 | Complete |
+| API-04 | Phase 2 | Complete |
+| API-05 | Phase 2 | Complete |
+| API-06 | Phase 2 | Complete |
 | AI-01 | Phase 3 | Pending |
 | INFRA-01 | Phase 1 | Complete |
 | INFRA-02 | Phase 1 | Complete |
@@ -94,4 +94,4 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ---
 *Requirements defined: 2026-06-08*
-*Last updated: 2026-06-08 after initial definition*
+*Last updated: 2026-06-09 after Phase 2 completion*
