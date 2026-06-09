@@ -9,7 +9,7 @@
 - [x] **Phase 1: Foundation** — 数据库模型、Pydantic 契约、种子数据、基础设施配置 *(completed 2026-06-08)*
 - [x] **Phase 2: Core Endpoints** — 全部 6 个数据读取 API 端点实现 *(completed 2026-06-09)*
 - [x] **Phase 3: AI Proxy** — MiMo API 代理端点实现 *(completed 2026-06-09)*
-- [ ] **Phase 4: User System** — CAS 登录、JWT 认证、食堂实时客流
+- [x] **Phase 4: User System** — CAS 登录、JWT 认证、食堂实时客流 *(completed 2026-06-09)*
 - [ ] **Phase 5: Reviews & Favorites** — 菜品评价、收藏、点赞功能
 
 ## Phase Details
@@ -76,9 +76,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — CAS 登录 + JWT 签发：用户可登录拿到 Token
-- [ ] 04-02-PLAN.md — 全局认证保护：所有端点要求登录
-- [ ] 04-03-PLAN.md — 食堂实时客流数据：E-Mobile 抓取 + 定时刷新
+- [x] 04-01-PLAN.md — CAS 登录 + JWT 签发：用户可登录拿到 Token
+- [x] 04-02-PLAN.md — 全局认证保护：所有端点要求登录
+- [x] 04-03-PLAN.md — 食堂实时客流数据：E-Mobile 抓取 + 定时刷新
 
 ### Phase 5: Reviews & Favorites
 **Goal:** 用户可评价菜品、收藏菜品、点赞菜品
@@ -95,5 +95,5 @@ Plans:
 | 1. Foundation | 2/2 | Complete | 2026-06-08 |
 | 2. Core Endpoints | 1/1 | Complete | 2026-06-09 |
 | 3. AI Proxy | 1/1 | Complete | 2026-06-09 |
-| 4. User System | 0/3 | In Progress | - |
+| 4. User System | 3/3 | Complete | 2026-06-09 |
 | 5. Reviews & Favorites | 0/0 | Not Started | - |
