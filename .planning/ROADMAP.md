@@ -1,14 +1,16 @@
 # Roadmap: 今天吃什么 — 后端
 
 **Created:** 2026-06-08
-**Phases:** 3
-**Requirements:** 18 mapped
+**Phases:** 5
+**Requirements:** 18 mapped (v1) + D-01~D-17 (Phase 4)
 
 ## Phases
 
 - [x] **Phase 1: Foundation** — 数据库模型、Pydantic 契约、种子数据、基础设施配置 *(completed 2026-06-08)*
 - [x] **Phase 2: Core Endpoints** — 全部 6 个数据读取 API 端点实现 *(completed 2026-06-09)*
-- [ ] **Phase 3: AI Proxy** — MiMo API 代理端点实现
+- [x] **Phase 3: AI Proxy** — MiMo API 代理端点实现 *(completed 2026-06-09)*
+- [ ] **Phase 4: User System** — CAS 登录、JWT 认证、食堂实时客流
+- [ ] **Phase 5: Reviews & Favorites** — 菜品评价、收藏、点赞功能
 
 ## Phase Details
 
@@ -57,7 +59,34 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 03-01-PLAN.md — AI chat proxy: POST /api/ai/chat with MiMo forwarding
+- [x] 03-01-PLAN.md — AI chat proxy: POST /api/ai/chat with MiMo forwarding
+
+### Phase 4: User System
+**Goal:** 用户通过南大 CAS 登录获取 JWT，所有端点需认证，食堂客流实时更新
+**Mode:** mvp
+**Depends on:** Phase 1
+**Requirements:** D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15, D-16, D-17
+**Success Criteria:**
+1. `POST /api/auth/login` 接收 CAS ticket，验证后返回 JWT token + 用户信息
+2. 无效 ticket 返回 401；无 Authorization header 访问数据端点返回 401/403
+3. 携带有效 JWT 的请求正常访问所有数据端点
+4. 首次登录自动创建 User 记录（users 表）
+5. 前端无 JWT 时自动跳转 CAS 登录页；/auth/callback 可提取 ticket 换 JWT
+6. 定时任务启动且 session.json 存在时可更新 canteen status 字段
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — CAS 登录 + JWT 签发：用户可登录拿到 Token
+- [ ] 04-02-PLAN.md — 全局认证保护：所有端点要求登录
+- [ ] 04-03-PLAN.md — 食堂实时客流数据：E-Mobile 抓取 + 定时刷新
+
+### Phase 5: Reviews & Favorites
+**Goal:** 用户可评价菜品、收藏菜品、点赞菜品
+**Mode:** mvp
+**Depends on:** Phase 4
+**Requirements:** TBD
+**Success Criteria:** TBD (discuss-phase will define)
+**Plans:** TBD
 
 ## Progress
 
@@ -65,4 +94,6 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-06-08 |
 | 2. Core Endpoints | 1/1 | Complete | 2026-06-09 |
-| 3. AI Proxy | 0/1 | In Progress | - |
+| 3. AI Proxy | 1/1 | Complete | 2026-06-09 |
+| 4. User System | 0/3 | In Progress | - |
+| 5. Reviews & Favorites | 0/0 | Not Started | - |
