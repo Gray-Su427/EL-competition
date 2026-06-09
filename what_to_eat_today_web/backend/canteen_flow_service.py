@@ -38,7 +38,8 @@ SESSION_FILE_PATH = Path(
 CANTEEN_NAME_MAP: dict[str, str] = {
     "学生第一食堂": "c1",
     "学生第二食堂": "c2",
-    "教工餐厅": "c3",
+    "学生第三食堂": "c3",
+    "教工餐厅": "c4",
 }
 
 
