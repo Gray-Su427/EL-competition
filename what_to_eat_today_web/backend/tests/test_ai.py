@@ -1,7 +1,7 @@
 """Tests for POST /api/ai/chat endpoint."""
 
 import os
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
@@ -10,13 +10,32 @@ from httpx import ASGITransport, AsyncClient
 from main import app
 
 
-def _mock_mimo_response(content: str = "推荐一食堂的红烧肉"):
-    """Create a mock MiMo API success response."""
-    mock_resp = AsyncMock()
-    mock_resp.status_code = 200
+def _mock_mimo_response(content: str = "推荐一食堂的红烧肉", status_code: int = 200):
+    """Create a mock MiMo API success response.
+
+    Uses MagicMock (not AsyncMock) because httpx Response.json() is synchronous.
+    """
+    mock_resp = MagicMock()
+    mock_resp.status_code = status_code
     mock_resp.json.return_value = {
         "choices": [{"message": {"content": content}}]
     }
+    return mock_resp
+
+
+def _mock_mimo_error_response(status_code: int = 429):
+    """Create a mock MiMo API error response."""
+    mock_resp = MagicMock()
+    mock_resp.status_code = status_code
+    mock_resp.json.return_value = {"error": "rate limited"}
+    return mock_resp
+
+
+def _mock_mimo_malformed_response():
+    """Create a mock MiMo API response with malformed JSON (no choices)."""
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {"data": "unexpected format"}
     return mock_resp
 
 
@@ -88,10 +107,9 @@ async def test_mimo_non_200_returns_500():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         app.state.http_client = AsyncMock(spec=httpx.AsyncClient)
-        mock_resp = AsyncMock()
-        mock_resp.status_code = 429
-        mock_resp.json.return_value = {"error": "rate limited"}
-        app.state.http_client.post = AsyncMock(return_value=mock_resp)
+        app.state.http_client.post = AsyncMock(
+            return_value=_mock_mimo_error_response(429)
+        )
 
         with patch.dict(os.environ, {"MIMO_API_KEY": "test-key-123"}):
             response = await client.post(
@@ -109,10 +127,9 @@ async def test_mimo_malformed_json_returns_500():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         app.state.http_client = AsyncMock(spec=httpx.AsyncClient)
-        mock_resp = AsyncMock()
-        mock_resp.status_code = 200
-        mock_resp.json.return_value = {"data": "unexpected format"}
-        app.state.http_client.post = AsyncMock(return_value=mock_resp)
+        app.state.http_client.post = AsyncMock(
+            return_value=_mock_mimo_malformed_response()
+        )
 
         with patch.dict(os.environ, {"MIMO_API_KEY": "test-key-123"}):
             response = await client.post(
