@@ -1,5 +1,6 @@
 """FastAPI application entry point with lifespan and CORS middleware."""
 
+import asyncio
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -20,9 +21,25 @@ async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     seed_data()
     app.state.http_client = httpx.AsyncClient(timeout=30.0)
+
+    # Start canteen flow refresh background task
+    from canteen_flow_service import start_refresh_loop
+
+    app.state.flow_task = asyncio.create_task(
+        start_refresh_loop(app.state.http_client)
+    )
+    print("Canteen flow refresh task started")
+
     print("Application startup complete")
     yield
     # Shutdown
+    app.state.flow_task.cancel()
+    try:
+        await app.state.flow_task
+    except asyncio.CancelledError:
+        pass
+    print("Canteen flow refresh task stopped")
+
     await app.state.http_client.aclose()
     print("Application shutdown complete")
 
