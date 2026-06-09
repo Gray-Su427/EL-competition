@@ -36,9 +36,9 @@ SESSION_FILE_PATH = Path(
 
 # E-Mobile canteen name -> database canteen id mapping
 CANTEEN_NAME_MAP: dict[str, str] = {
-    "鼓楼食堂一楼": "c1",
-    "鼓楼食堂二楼": "c2",
-    "鼓楼教工食堂": "c3",
+    "学生第一食堂": "c1",
+    "学生第二食堂": "c2",
+    "教工餐厅": "c3",
 }
 
 

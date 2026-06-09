@@ -5,6 +5,8 @@ export interface Canteen {
   status: '空闲' | '正常' | '拥挤';
   distance: string;
   openTime: string;
+  currentPeople: number | null;
+  occupancyPct: string | null;
 }
 
 // 菜品信息

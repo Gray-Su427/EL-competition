@@ -26,6 +26,14 @@ const CanteenHeat: React.FC<CanteenHeatProps> = ({ canteens }) => {
                 <span className="canteen-distance">📍 {canteen.distance}</span>
                 <span className="canteen-time">🕐 {canteen.openTime}</span>
               </div>
+              <div className="canteen-heat-flow">
+                {canteen.currentPeople != null && (
+                  <span className="canteen-people">👥 {canteen.currentPeople}人</span>
+                )}
+                {canteen.occupancyPct && (
+                  <span className="canteen-occupancy">{canteen.occupancyPct}</span>
+                )}
+              </div>
               <span
                 className="canteen-status-tag"
                 style={{ backgroundColor: config.bg, color: config.color }}

@@ -18,6 +18,8 @@ class CanteenOut(BaseModel):
     status: str
     distance: str
     open_time: str
+    current_people: int | None = None
+    occupancy_pct: str | None = None
 
 
 class DishOut(BaseModel):
