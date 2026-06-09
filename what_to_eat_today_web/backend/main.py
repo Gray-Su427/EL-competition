@@ -37,6 +37,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register route modules
+from routes.canteens import router as canteens_router
+from routes.dishes import router as dishes_router
+from routes.suggestion import router as suggestion_router
+from routes.search import router as search_router
+
+app.include_router(canteens_router)
+app.include_router(dishes_router)
+app.include_router(suggestion_router)
+app.include_router(search_router)
+
 
 @app.get("/")
 async def health_check():
