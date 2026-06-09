@@ -28,3 +28,18 @@ export interface TodaySuggestion {
   text: string;
   highlightDish?: Dish;
 }
+
+// 菜品评价
+export interface Review {
+  id: number;
+  userId: number;
+  dishId: string;
+  dishName: string;
+  dishEmoji: string;
+  nickname: string;
+  rating: number;
+  content: string | null;
+  tags: string[];
+  images: string[];
+  createdAt: string;
+}

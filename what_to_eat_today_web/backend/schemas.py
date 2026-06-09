@@ -1,6 +1,7 @@
 """Pydantic response models with camelCase output aliases."""
 
 import json
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, field_validator
 from pydantic.alias_generators import to_camel
@@ -61,3 +62,47 @@ class TodaySuggestionOut(BaseModel):
 
     text: str
     highlight_dish: DishOut
+
+
+class ReviewOut(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+        from_attributes=True,
+    )
+
+    id: int
+    user_id: int
+    dish_id: str
+    dish_name: str = ""
+    dish_emoji: str = ""
+    nickname: str = ""
+    rating: int
+    content: str | None = None
+    tags: list[str] = []
+    images: list[str] = []
+    created_at: datetime | None = None
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def parse_review_tags(cls, v: object) -> list[str]:
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except (json.JSONDecodeError, TypeError):
+                return []
+        if v is None:
+            return []
+        return v  # type: ignore[return-value]
+
+    @field_validator("images", mode="before")
+    @classmethod
+    def parse_images(cls, v: object) -> list[str]:
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except (json.JSONDecodeError, TypeError):
+                return []
+        if v is None:
+            return []
+        return v  # type: ignore[return-value]

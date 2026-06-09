@@ -2,10 +2,12 @@
 
 import asyncio
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import httpx
 
 load_dotenv()
@@ -60,12 +62,22 @@ from routes.dishes import router as dishes_router
 from routes.suggestion import router as suggestion_router
 from routes.search import router as search_router
 from routes.ai import router as ai_router
+from routes.auth import router as auth_router
+from routes.reviews import router as reviews_router
 
 app.include_router(canteens_router)
 app.include_router(dishes_router)
 app.include_router(suggestion_router)
 app.include_router(search_router)
 app.include_router(ai_router)
+app.include_router(auth_router)
+app.include_router(reviews_router)
+
+# Static files for uploaded images
+static_dir = Path(__file__).parent / "static"
+static_dir.mkdir(exist_ok=True)
+(static_dir / "uploads").mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 
 @app.get("/")

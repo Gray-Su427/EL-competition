@@ -1,6 +1,7 @@
-"""ORM models for Canteen and Dish."""
+"""ORM models for Canteen, Dish, User, VerificationCode, and Review."""
 
-from sqlalchemy import Column, Float, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy.sql import func
 
 from database import Base
 
@@ -35,3 +36,36 @@ class Dish(Base):
     spice_level = Column(String, nullable=True)
     ingredient = Column(String, nullable=True)
     alias = Column(String, nullable=True)
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email = Column(String, unique=True, nullable=False)
+    nickname = Column(String, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+
+class VerificationCode(Base):
+    __tablename__ = "verification_codes"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email = Column(String, nullable=False)
+    code = Column(String(6), nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(Boolean, default=False)
+
+
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    dish_id = Column(String, ForeignKey("dishes.id"), nullable=False)
+    rating = Column(Integer, nullable=False)
+    content = Column(Text, nullable=True)
+    tags = Column(Text, nullable=True)  # JSON array
+    images = Column(Text, nullable=True)  # JSON array of file paths
+    created_at = Column(DateTime, server_default=func.now())

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Dish } from '../types';
 
 interface DishListProps {
@@ -7,10 +8,12 @@ interface DishListProps {
 
 /** 今日推荐菜品列表 */
 const DishList: React.FC<DishListProps> = ({ dishes }) => {
+  const navigate = useNavigate();
   // 记录哪些菜品已点击"想吃"
   const [liked, setLiked] = useState<Set<string>>(new Set());
 
-  const handleLike = (id: string) => {
+  const handleLike = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
     setLiked((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
@@ -42,7 +45,7 @@ const DishList: React.FC<DishListProps> = ({ dishes }) => {
     <div className="dish-list">
       <h3 className="section-title">今日推荐</h3>
       {dishes.map((dish) => (
-        <div key={dish.id} className="dish-card">
+        <div key={dish.id} className="dish-card" onClick={() => navigate(`/dish/${dish.id}`)} style={{ cursor: 'pointer' }}>
           <div className="dish-card-left">
             <span className="dish-emoji">{dish.emoji}</span>
           </div>
@@ -75,7 +78,7 @@ const DishList: React.FC<DishListProps> = ({ dishes }) => {
           <div className="dish-card-right">
             <button
               className={`dish-like-btn ${liked.has(dish.id) ? 'liked' : ''}`}
-              onClick={() => handleLike(dish.id)}
+              onClick={(e) => handleLike(e, dish.id)}
             >
               {liked.has(dish.id) ? '已选择 ✓' : '想吃'}
             </button>

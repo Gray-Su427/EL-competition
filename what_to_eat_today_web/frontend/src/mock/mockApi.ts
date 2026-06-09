@@ -1,4 +1,5 @@
-import type { Canteen, Dish, TodaySuggestion } from '../types';
+import type { Canteen, Dish, Review, TodaySuggestion } from '../types';
+import { authHeaders } from '../services/authService';
 
 // ========== 真实 API 调用 ==========
 
@@ -60,5 +61,74 @@ export async function getSearchSuggestions(keyword: string): Promise<string[]> {
   if (!keyword.trim()) return [];
   const res = await fetch(`/api/search/suggestions?keyword=${encodeURIComponent(keyword)}`);
   if (!res.ok) throw new Error(`请求失败: ${res.status}`);
+  return res.json();
+}
+
+// ========== 评价 API ==========
+
+/**
+ * 获取最新评价
+ * GET /api/reviews/recent
+ */
+export async function getRecentReviews(): Promise<Review[]> {
+  const res = await fetch('/api/reviews/recent');
+  if (!res.ok) throw new Error(`请求失败: ${res.status}`);
+  return res.json();
+}
+
+/**
+ * 获取某菜品的评价
+ * GET /api/reviews?dish_id=xxx
+ */
+export async function getReviews(dishId?: string): Promise<Review[]> {
+  const url = dishId ? `/api/reviews?dish_id=${encodeURIComponent(dishId)}` : '/api/reviews';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`请求失败: ${res.status}`);
+  return res.json();
+}
+
+/**
+ * 获取我的评价
+ * GET /api/reviews/mine
+ */
+export async function getMyReviews(): Promise<Review[]> {
+  const res = await fetch('/api/reviews/mine', { headers: authHeaders() });
+  if (!res.ok) throw new Error(`请求失败: ${res.status}`);
+  return res.json();
+}
+
+/**
+ * 创建评价（带图片上传）
+ * POST /api/reviews (multipart/form-data)
+ */
+export async function createReview(data: {
+  dishId: string;
+  rating: number;
+  content?: string;
+  tags?: string[];
+  images?: File[];
+}): Promise<Review> {
+  const formData = new FormData();
+  formData.append('dish_id', data.dishId);
+  formData.append('rating', String(data.rating));
+  if (data.content) formData.append('content', data.content);
+  if (data.tags && data.tags.length > 0) {
+    formData.append('tags', JSON.stringify(data.tags));
+  }
+  if (data.images) {
+    for (const img of data.images) {
+      formData.append('images', img);
+    }
+  }
+
+  const res = await fetch('/api/reviews', {
+    method: 'POST',
+    headers: authHeaders(),
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || '提交失败');
+  }
   return res.json();
 }
