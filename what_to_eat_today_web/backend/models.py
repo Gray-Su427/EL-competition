@@ -1,4 +1,4 @@
-"""ORM models for Canteen and Dish."""
+"""ORM models for Canteen, Dish, and User."""
 
 from sqlalchemy import Column, Float, Integer, String, Text
 
@@ -28,3 +28,14 @@ class Dish(Base):
     tags = Column(Text, nullable=False)
     heat_status = Column(String, nullable=False)
     emoji = Column(String, nullable=False)
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    student_id = Column(String, unique=True, nullable=False, index=True)
+    name = Column(String, nullable=False)
+    nickname = Column(String, nullable=True)
+    avatar_url = Column(String, nullable=True)
+    created_at = Column(String, nullable=False)
