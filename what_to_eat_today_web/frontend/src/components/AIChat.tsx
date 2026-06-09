@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { chat, type ChatMessage } from '../services/aiService';
+import { chatStream, type ChatMessage } from '../services/aiService';
 
 interface DisplayMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   loading?: boolean;
+  streaming?: boolean;
 }
 
 // 快捷问题
@@ -25,6 +26,7 @@ const AIChat: React.FC = () => {
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   // 自动滚动到底部
   useEffect(() => {
@@ -36,59 +38,80 @@ const AIChat: React.FC = () => {
     setTimeout(() => inputRef.current?.focus(), 100);
   }, []);
 
-  // 发送消息
-  const handleSend = async (text?: string) => {
+  // 组件卸载时取消进行中的请求
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
+
+  // 发送消息（流式）
+  const handleSend = (text?: string) => {
     const content = (text || input).trim();
     if (!content || sending) return;
 
-    // 添加用户消息
     const userMsg: DisplayMessage = {
       id: Date.now().toString(),
       role: 'user',
       content,
     };
 
-    // 添加 AI loading 占位
-    const loadingMsg: DisplayMessage = {
+    const assistantMsg: DisplayMessage = {
       id: (Date.now() + 1).toString(),
       role: 'assistant',
       content: '',
       loading: true,
+      streaming: true,
     };
 
-    setMessages((prev) => [...prev, userMsg, loadingMsg]);
+    const updatedMessages = [...messages, userMsg, assistantMsg];
+    setMessages(updatedMessages);
     setInput('');
     setSending(true);
 
-    try {
-      // 构建对话历史（不含 loading 消息）
-      const history: ChatMessage[] = [...messages, userMsg].map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
+    // 构建对话历史（不含当前 assistant 占位）
+    const history: ChatMessage[] = [...messages, userMsg].map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
 
-      const reply = await chat(history);
+    const msgId = assistantMsg.id;
 
-      // 替换 loading 消息为真实回复
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === loadingMsg.id
-            ? { ...m, content: reply, loading: false }
-            : m
-        )
-      );
-    } catch {
-      // 错误处理
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === loadingMsg.id
-            ? { ...m, content: '抱歉，AI 服务暂时不可用，请稍后再试 😅', loading: false }
-            : m
-        )
-      );
-    } finally {
-      setSending(false);
-    }
+    abortRef.current = chatStream(
+      history,
+      // onToken: 逐 token 追加
+      (token) => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === msgId
+              ? { ...m, content: m.content + token, loading: false }
+              : m
+          )
+        );
+      },
+      // onDone: 标记流式结束
+      () => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === msgId ? { ...m, streaming: false } : m
+          )
+        );
+        setSending(false);
+        abortRef.current = null;
+      },
+      // onError: 显示错误
+      (error) => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === msgId
+              ? { ...m, content: error || '抱歉，AI 服务暂时不可用，请稍后再试 😅', loading: false, streaming: false }
+              : m
+          )
+        );
+        setSending(false);
+        abortRef.current = null;
+      }
+    );
   };
 
   // 按回车发送
@@ -101,7 +124,10 @@ const AIChat: React.FC = () => {
 
   // 清空对话
   const handleClear = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
     setMessages([]);
+    setSending(false);
   };
 
   return (

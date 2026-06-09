@@ -1,10 +1,12 @@
 """AI chat proxy endpoint — forwards conversations to MiMo API."""
 
+import json
 import logging
 import os
-from typing import Optional
+from typing import AsyncGenerator, Optional
 
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, model_validator
 
 logger = logging.getLogger(__name__)
@@ -122,3 +124,89 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         raise HTTPException(status_code=500, detail="AI 服务暂时不可用")
 
     return ChatResponse(reply=content)
+
+
+@router.post("/chat/stream")
+async def chat_stream(request: Request, body: ChatRequest):
+    """Stream AI response via SSE (Server-Sent Events).
+
+    Same input as /chat, but returns text/event-stream with incremental tokens.
+    Each SSE event has `data: {"content": "..."}` or `data: [DONE]` at the end.
+    """
+    mimo_api_key = os.environ.get("MIMO_API_KEY")
+    if not mimo_api_key:
+        raise HTTPException(status_code=500, detail="AI 服务未配置")
+
+    # Normalize input
+    if body.message is not None:
+        user_messages = [{"role": "user", "content": body.message}]
+    else:
+        user_messages = body.messages or []
+
+    # Strip system messages from frontend
+    filtered_messages = [
+        msg for msg in user_messages if msg.get("role") != "system"
+    ]
+
+    full_messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        *filtered_messages,
+    ]
+
+    http_client = request.app.state.http_client
+
+    async def generate() -> AsyncGenerator[str, None]:
+        try:
+            async with http_client.stream(
+                "POST",
+                MIMO_API_URL,
+                json={
+                    "model": MIMO_MODEL,
+                    "messages": full_messages,
+                    "max_completion_tokens": 512,
+                    "temperature": 0.7,
+                    "stream": True,
+                },
+                headers={
+                    "Content-Type": "application/json",
+                    "api-key": mimo_api_key,
+                },
+            ) as response:
+                if response.status_code != 200:
+                    logger.warning(
+                        "MiMo API stream returned status %d",
+                        response.status_code,
+                    )
+                    yield f"data: {json.dumps({'error': 'AI 服务暂时不可用'})}\n\n"
+                    return
+
+                async for line in response.aiter_lines():
+                    if not line.startswith("data: "):
+                        continue
+                    payload = line[6:]  # strip "data: "
+                    if payload == "[DONE]":
+                        yield "data: [DONE]\n\n"
+                        return
+                    try:
+                        chunk = json.loads(payload)
+                        choices = chunk.get("choices", [])
+                        if not choices:
+                            continue
+                        delta = choices[0].get("delta", {})
+                        content = delta.get("content")
+                        if content:
+                            yield f"data: {json.dumps({'content': content})}\n\n"
+                    except (json.JSONDecodeError, KeyError, IndexError):
+                        continue
+        except Exception:
+            logger.exception("MiMo API stream failed")
+            yield f"data: {json.dumps({'error': 'AI 服务暂时不可用'})}\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
