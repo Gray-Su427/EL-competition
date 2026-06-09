@@ -2,13 +2,18 @@
 
 import random
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from auth import get_current_user
 from database import SessionLocal
 from models import Dish
 from schemas import TodaySuggestionOut
 
-router = APIRouter(prefix="/api/suggestion", tags=["suggestion"])
+router = APIRouter(
+    prefix="/api/suggestion",
+    tags=["suggestion"],
+    dependencies=[Depends(get_current_user)],
+)
 
 # Hardcoded suggestions per D-01, mapping text to dish_id
 _SUGGESTIONS = [

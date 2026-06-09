@@ -1,12 +1,15 @@
 """Canteen list endpoint."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from auth import get_current_user
 from database import SessionLocal
 from models import Canteen
 from schemas import CanteenOut
 
-router = APIRouter(prefix="/api", tags=["canteens"])
+router = APIRouter(
+    prefix="/api", tags=["canteens"], dependencies=[Depends(get_current_user)]
+)
 
 
 @router.get("/canteens", response_model=list[CanteenOut])
