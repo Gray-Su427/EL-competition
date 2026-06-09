@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface QuickEntryProps {
   onAIClick: () => void;
@@ -6,11 +7,12 @@ interface QuickEntryProps {
 
 /** 快捷入口 */
 const QuickEntry: React.FC<QuickEntryProps> = ({ onAIClick }) => {
+  const navigate = useNavigate();
   const entries = [
-    { icon: '🏫', label: '附近食堂', action: () => {} },
-    { icon: '🔥', label: '热门菜品', action: () => {} },
+    { icon: '🏫', label: '附近食堂', action: () => navigate('/canteens') },
+    { icon: '🔥', label: '热门菜品', action: () => navigate('/recommended') },
     { icon: '🤖', label: 'AI 问问', action: onAIClick },
-    { icon: '✍️', label: '我要评价', action: () => {} },
+    { icon: '✍️', label: '我要评价', action: () => navigate('/comments') },
   ];
 
   return (

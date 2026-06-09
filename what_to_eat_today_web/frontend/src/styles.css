@@ -1156,3 +1156,265 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ========== 食堂页 ========== */
+.canteen-page {
+  padding-bottom: 8px;
+}
+
+.canteen-page-card {
+  margin: 0 16px 10px;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.canteen-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.canteen-page-header:hover {
+  background: #FFF9F5;
+}
+
+.canteen-page-header:active {
+  background: #FFF0E8;
+}
+
+.canteen-page-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.canteen-page-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.canteen-page-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #999;
+}
+
+.canteen-page-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.canteen-page-status {
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.canteen-page-arrow {
+  font-size: 12px;
+  color: #bbb;
+  transition: transform 0.25s ease;
+}
+
+.canteen-page-arrow.open {
+  transform: rotate(90deg);
+  color: #FF7A3D;
+}
+
+.canteen-page-dishes {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+}
+
+.canteen-page-dishes.open {
+  max-height: 600px;
+  opacity: 1;
+}
+
+.canteen-page-dishes-inner {
+  padding: 0 14px 14px;
+}
+
+.canteen-page-empty {
+  text-align: center;
+  padding: 20px 0;
+  font-size: 13px;
+  color: #bbb;
+}
+
+/* ========== 用户页 ========== */
+.user-page {
+  padding-bottom: 8px;
+}
+
+.user-page-section {
+  margin: 0 16px 12px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.user-page-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.user-page-count {
+  font-size: 12px;
+  color: #999;
+  font-weight: 400;
+}
+
+/* 资料 */
+.user-page-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.user-page-avatar {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #FFF5EE, #F0FFF0);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.user-page-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-page-nickname {
+  font-size: 17px;
+  font-weight: 600;
+  color: #333;
+}
+
+.user-page-hint {
+  font-size: 12px;
+  color: #bbb;
+}
+
+.user-page-loading {
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.user-page-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 0;
+  font-size: 13px;
+  color: #999;
+}
+
+.user-page-empty span {
+  font-size: 28px;
+}
+
+.user-page-fav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-page-fav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: #F8F4EA;
+  border-radius: 10px;
+}
+
+.user-page-fav-emoji {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.user-page-fav-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-page-fav-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.user-page-fav-location {
+  font-size: 11px;
+  color: #999;
+}
+
+.user-page-fav-remove {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.15s;
+}
+
+.user-page-fav-remove:hover {
+  color: #F44336;
+}
+
+.user-page-setting-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-page-setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #F5F1E7;
+}
+
+.user-page-setting-item:last-child {
+  border-bottom: none;
+}
+
+.user-page-setting-value {
+  font-size: 13px;
+  color: #999;
+}

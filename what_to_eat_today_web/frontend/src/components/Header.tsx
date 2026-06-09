@@ -13,7 +13,7 @@ const Header: React.FC<HeaderProps> = ({ searchKeyword, onSearchChange, onSearch
       <div className="header-top">
         <div className="header-location">
           <span className="location-icon">📍</span>
-          <span className="location-text">南京大学 · 仙林校区</span>
+          <span className="location-text">南京大学 · 鼓楼校区</span>
         </div>
         <div className="header-avatar">🍚</div>
       </div>

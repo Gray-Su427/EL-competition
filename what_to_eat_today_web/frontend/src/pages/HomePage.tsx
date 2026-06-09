@@ -7,7 +7,6 @@ import QuickEntry from '../components/QuickEntry';
 import DishList from '../components/DishList';
 import CanteenHeat from '../components/CanteenHeat';
 import AISuggestion from '../components/AISuggestion';
-import BottomNav from '../components/BottomNav';
 import { useNavigate } from 'react-router-dom';
 
 const HomePage: React.FC = () => {
@@ -56,37 +55,31 @@ const HomePage: React.FC = () => {
 
   if (initialLoading) {
     return (
-      <div className="app-container">
-        <div className="loading-screen">
-          <span className="loading-emoji">🍚</span>
-          <p>正在加载美味推荐...</p>
-        </div>
+      <div className="loading-screen">
+        <span className="loading-emoji">🍚</span>
+        <p>正在加载美味推荐...</p>
       </div>
     );
   }
 
   return (
-    <div className="app-container">
-      <div className="app-scroll">
-        <Header
-          searchKeyword={searchKeyword}
-          onSearchChange={setSearchKeyword}
-          onSearchFocus={() => navigate('/search')}
-        />
-        <RecommendCard
-          suggestion={suggestion}
-          highlightDish={highlightDish}
-          loading={loading}
-          onRecommend={handleRecommend}
-        />
-        <QuickEntry onAIClick={() => navigate('/ai')} />
-        <DishList dishes={dishes.slice(0, 3)} />
-        <CanteenHeat canteens={canteens} />
-        <AISuggestion onOpenChat={() => navigate('/ai')} />
-        <div className="bottom-spacer" />
-      </div>
-      <BottomNav />
-    </div>
+    <>
+      <Header
+        searchKeyword={searchKeyword}
+        onSearchChange={setSearchKeyword}
+        onSearchFocus={() => navigate('/search')}
+      />
+      <RecommendCard
+        suggestion={suggestion}
+        highlightDish={highlightDish}
+        loading={loading}
+        onRecommend={handleRecommend}
+      />
+      <QuickEntry onAIClick={() => navigate('/ai')} />
+      <DishList dishes={dishes.slice(0, 3)} />
+      <CanteenHeat canteens={canteens} />
+      <AISuggestion onOpenChat={() => navigate('/ai')} />
+    </>
   );
 };
 
