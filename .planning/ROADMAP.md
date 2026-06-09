@@ -54,7 +54,10 @@ Plans:
 1. `curl -X POST http://localhost:8000/api/ai/chat -H "Content-Type: application/json" -d '{"message":"今天吃什么"}' ` 返回含 `reply` 字段的 JSON，内容来自 MiMo 响应
 2. `.env` 中 `MIMO_API_KEY` 缺失时，端点返回 500 并附带明确错误信息，不泄露 key 值
 3. 请求日志中不出现 API Key 明文；MiMo 实际请求通过服务端 httpx client 发出，浏览器 Network 面板不可见 key
-**Plans:** TBD
+**Plans:** 1 plan
+
+Plans:
+- [ ] 03-01-PLAN.md — AI chat proxy: POST /api/ai/chat with MiMo forwarding
 
 ## Progress
 
@@ -62,4 +65,4 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-06-08 |
 | 2. Core Endpoints | 1/1 | Complete | 2026-06-09 |
-| 3. AI Proxy | 0/0 | Not started | - |
+| 3. AI Proxy | 0/1 | In Progress | - |
