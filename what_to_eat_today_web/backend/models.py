@@ -13,6 +13,9 @@ class Canteen(Base):
     status = Column(String, nullable=False)
     distance = Column(String, nullable=False)
     open_time = Column(String, nullable=False)
+    current_people = Column(Integer, nullable=True)
+    occupancy_pct = Column(String, nullable=True)
+    flow_updated_at = Column(String, nullable=True)
 
 
 class Dish(Base):
