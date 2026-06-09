@@ -31,3 +31,7 @@ class Dish(Base):
     tags = Column(Text, nullable=False)
     heat_status = Column(String, nullable=False)
     emoji = Column(String, nullable=False)
+    cuisine = Column(String, nullable=True)
+    spice_level = Column(String, nullable=True)
+    ingredient = Column(String, nullable=True)
+    alias = Column(String, nullable=True)

@@ -39,6 +39,10 @@ class DishOut(BaseModel):
     tags: list[str]
     heat_status: str
     emoji: str
+    cuisine: str | None = None
+    spice_level: str | None = None
+    ingredient: str | None = None
+    alias: str | None = None
 
     @field_validator("tags", mode="before")
     @classmethod

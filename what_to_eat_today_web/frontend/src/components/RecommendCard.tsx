@@ -32,12 +32,15 @@ const RecommendCard: React.FC<RecommendCardProps> = ({
               <span className="highlight-location">
                 {highlightDish.canteen} · {highlightDish.window}
               </span>
+              {highlightDish.tags && highlightDish.tags.length > 0 && (
+                <span className="highlight-tags">
+                  {highlightDish.tags.slice(0, 3).join(' · ')}
+                </span>
+              )}
             </div>
             <span className="highlight-price">¥{highlightDish.price}</span>
           </div>
         )}
-
-        {suggestion && <p className="recommend-suggestion">{suggestion}</p>}
 
         <button
           className="recommend-btn"
