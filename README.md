@@ -10,6 +10,7 @@ EL-competition/
 │   ├── frontend/          # React SPA 前端
 │   └── backend/           # FastAPI 后端
 ├── What_to_eat_today_app/ # Android WebView 壳应用
+├── 食堂菜品统计表_已加标签.xlsx  # 菜品种子数据（后端启动时自动导入）
 └── .planning/             # 项目规划文档
 ```
 
@@ -26,6 +27,7 @@ EL-competition/
 - SQLAlchemy 2.0（ORM）
 - SQLite（数据库）
 - httpx（异步 HTTP 客户端，用于 AI 代理）
+- pandas + openpyxl（Excel 种子数据导入）
 - PyJWT（认证令牌）
 - python-dotenv（环境变量管理）
 - python-multipart（文件上传）
@@ -242,7 +244,9 @@ npm run build
 ### 数据库
 
 - SQLite 文件 `canteen.db` 在后端首次启动时自动创建
-- 种子数据从 Excel 文件导入真实菜品数据（4 个鼓楼食堂）
+- 种子数据从项目根目录的 `食堂菜品统计表_已加标签.xlsx` 导入真实菜品数据（4 个鼓楼食堂）
+- **重要**：该 Excel 文件是必需的种子数据源，已纳入版本控制，clone 后即可使用
+- 如果 Excel 文件不存在，启动时会跳过菜品导入（只创建食堂，无菜品数据）
 - 删除 `canteen.db` 后重启会重新生成
 
 ### 添加新 API 端点
