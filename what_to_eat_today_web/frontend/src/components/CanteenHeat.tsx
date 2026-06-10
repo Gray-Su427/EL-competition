@@ -28,10 +28,10 @@ const CanteenHeat: React.FC<CanteenHeatProps> = ({ canteens }) => {
               </div>
               <div className="canteen-heat-flow">
                 {canteen.currentPeople != null && (
-                  <span className="canteen-people">👥 {canteen.currentPeople}人</span>
+                  <div className="canteen-people">👥 当前 {canteen.currentPeople} 人</div>
                 )}
                 {canteen.occupancyPct && (
-                  <span className="canteen-occupancy">{canteen.occupancyPct}</span>
+                  <div className="canteen-occupancy">📊 拥挤度 {canteen.occupancyPct}</div>
                 )}
               </div>
               <span
