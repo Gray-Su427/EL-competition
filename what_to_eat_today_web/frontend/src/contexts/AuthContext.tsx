@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import type { ReactNode } from 'react';
 import { getMe, logout as logoutService, isAuthenticated, type AuthUser } from '../services/authService';
 
+/* eslint-disable react-refresh/only-export-components */
+
 interface AuthContextValue {
   user: AuthUser | null;
   isLoggedIn: boolean;
@@ -18,9 +20,27 @@ const AuthContext = createContext<AuthContextValue>({
   logout: () => {},
 });
 
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      Promise.resolve().then(() => setLoading(false));
+      return;
+    }
+    getMe()
+      .then((me) => setUser(me))
+      .catch(() => {
+        setUser(null);
+        logoutService();
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const refreshUser = useCallback(async () => {
     if (!isAuthenticated()) {
@@ -38,10 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    refreshUser();
-  }, [refreshUser]);
 
   const logout = useCallback(() => {
     logoutService();
@@ -61,8 +77,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  return useContext(AuthContext);
 }

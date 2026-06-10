@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import type { Dish, Review } from '../types';
 import { getRecommendedDishes, getRecentReviews } from '../mock/mockApi';
 
@@ -10,7 +10,6 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 const CommentsPage: React.FC = () => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('全部');
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -39,13 +38,13 @@ const CommentsPage: React.FC = () => {
   }).sort((a, b) => b.avg - a.avg);
 
   if (loading) {
-    return <div className="comments-loading">加载中...</div>;
+    return <div className="comments-loading">加载中…</div>;
   }
 
   return (
     <div className="comments-page">
       <div className="comments-header">
-        <h2>📝 菜品评价</h2>
+        <h2><span aria-hidden="true">📝</span> 菜品评价</h2>
         <p>按食堂浏览，评分从高到低</p>
       </div>
 
@@ -71,10 +70,10 @@ const CommentsPage: React.FC = () => {
       ) : (
         <div className="comments-dish-list">
           {dishWithAvg.map(({ dish, avg, reviewCount, latestReview }) => (
-            <div
+            <Link
               key={dish.id}
+              to={`/dish/${dish.id}`}
               className="comments-dish-card"
-              onClick={() => navigate(`/dish/${dish.id}`)}
             >
               <div className="comments-dish-top">
                 <span className="comments-dish-emoji">{dish.emoji}</span>
@@ -96,7 +95,7 @@ const CommentsPage: React.FC = () => {
                   </span>
                 </div>
               )}
-            </div>
+            </Link>
           ))}
         </div>
       )}

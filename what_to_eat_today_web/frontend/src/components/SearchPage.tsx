@@ -29,20 +29,15 @@ const SearchPage: React.FC = () => {
   const [keyword, setKeyword] = useState('');
   const [mode, setMode] = useState<SearchMode>('guide');
   const [hotKeywords, setHotKeywords] = useState<string[]>([]);
-  const [history, setHistory] = useState<string[]>([]);
+  const [history, setHistory] = useState<string[]>(loadHistory());
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [results, setResults] = useState<Dish[]>([]);
   const [searching, setSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 页面加载时自动聚焦 + 加载数据
+  // 页面加载时自动聚焦 + 加载热门关键词
   useEffect(() => {
-    setKeyword('');
-    setMode('guide');
-    setResults([]);
-    setSuggestions([]);
-    setHistory(loadHistory());
     getHotKeywords().then(setHotKeywords);
     setTimeout(() => inputRef.current?.focus(), 100);
   }, []);
@@ -126,7 +121,7 @@ const SearchPage: React.FC = () => {
       {/* 搜索栏 */}
       <div className="search-page-header">
         <div className="search-page-bar">
-          <span className="search-icon">🔍</span>
+          <span className="search-icon" aria-hidden="true">🔍</span>
           <input
             ref={inputRef}
             type="text"
@@ -137,7 +132,7 @@ const SearchPage: React.FC = () => {
             onKeyDown={handleKeyDown}
           />
           {keyword && (
-            <button className="search-clear-btn" onClick={handleBackToGuide}>
+            <button className="search-clear-btn" onClick={handleBackToGuide} aria-label="清空搜索">
               ✕
             </button>
           )}
@@ -154,7 +149,7 @@ const SearchPage: React.FC = () => {
             {/* 热门搜索 */}
             {hotKeywords.length > 0 && (
               <div className="search-section">
-                <h4 className="search-section-title">🔥 热门搜索</h4>
+                <h4 className="search-section-title"><span aria-hidden="true">🔥</span> 热门搜索</h4>
                 <div className="search-tags">
                   {hotKeywords.map((kw) => (
                     <button
@@ -173,7 +168,7 @@ const SearchPage: React.FC = () => {
             {history.length > 0 && (
               <div className="search-section">
                 <div className="search-section-header">
-                  <h4 className="search-section-title">🕐 搜索历史</h4>
+                  <h4 className="search-section-title"><span aria-hidden="true">🕐</span> 搜索历史</h4>
                   <button className="search-clear-history" onClick={clearHistory}>
                     清空
                   </button>
@@ -195,7 +190,7 @@ const SearchPage: React.FC = () => {
             {/* 引导提示 */}
             {hotKeywords.length === 0 && history.length === 0 && (
               <div className="search-empty-guide">
-                <span className="search-empty-icon">🍽️</span>
+                <span className="search-empty-icon" aria-hidden="true">🍽️</span>
                 <p>输入你想吃的菜品、食堂或口味</p>
               </div>
             )}
@@ -212,7 +207,7 @@ const SearchPage: React.FC = () => {
                   className="suggestion-item"
                   onClick={() => handleTagClick(s)}
                 >
-                  <span className="suggestion-icon">🔍</span>
+                  <span className="suggestion-icon" aria-hidden="true">🔍</span>
                   <span className="suggestion-text">{s}</span>
                 </button>
               ))
@@ -229,8 +224,8 @@ const SearchPage: React.FC = () => {
           <div className="search-results">
             {searching ? (
               <div className="search-loading">
-                <span className="loading-emoji">🔍</span>
-                <p>正在搜索...</p>
+                <span className="loading-emoji" aria-hidden="true">🔍</span>
+                <p>正在搜索…</p>
               </div>
             ) : results.length > 0 ? (
               <>
@@ -274,7 +269,7 @@ const SearchPage: React.FC = () => {
               </>
             ) : (
               <div className="search-no-results">
-                <span className="search-empty-icon">😅</span>
+                <span className="search-empty-icon" aria-hidden="true">😅</span>
                 <p>没有找到「{keyword}」相关菜品</p>
                 <span className="search-no-results-hint">换个关键词试试吧</span>
               </div>

@@ -9,7 +9,7 @@ const AISuggestion: React.FC<AISuggestionProps> = ({ onOpenChat }) => {
   return (
     <div className="ai-suggestion">
       <div className="ai-suggestion-header">
-        <span className="ai-icon">🤖</span>
+        <span className="ai-icon" aria-hidden="true">🤖</span>
         <div>
           <h3 className="ai-title">不知道吃什么？问问 AI</h3>
           <p className="ai-desc">
@@ -18,7 +18,7 @@ const AISuggestion: React.FC<AISuggestionProps> = ({ onOpenChat }) => {
         </div>
       </div>
       <button className="ai-btn" onClick={onOpenChat}>
-        开始问问 ✨
+        开始问问 <span aria-hidden="true">✨</span>
       </button>
     </div>
   );

@@ -22,21 +22,24 @@ const CanteensPage: React.FC = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
       try {
         const [cData, dData] = await Promise.all([
           getCanteens(),
           getRecommendedDishes(),
         ]);
+        if (cancelled) return;
         setCanteens(cData);
         setDishes(dData);
       } catch {
-        setError('加载食堂数据失败');
+        if (!cancelled) setError('加载食堂数据失败');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     load();
+    return () => { cancelled = true; };
   }, []);
 
   const toggleExpand = (id: string) => {
@@ -46,8 +49,8 @@ const CanteensPage: React.FC = () => {
   if (loading) {
     return (
       <div className="loading-screen">
-        <span className="loading-emoji">🍚</span>
-        <p>正在加载食堂数据...</p>
+        <span className="loading-emoji" aria-hidden="true">🍚</span>
+        <p>正在加载食堂数据…</p>
       </div>
     );
   }
@@ -55,7 +58,7 @@ const CanteensPage: React.FC = () => {
   if (error) {
     return (
       <div className="loading-screen">
-        <span className="loading-emoji">😅</span>
+        <span className="loading-emoji" aria-hidden="true">😅</span>
         <p>{error}</p>
       </div>
     );
@@ -78,8 +81,8 @@ const CanteensPage: React.FC = () => {
               <div className="canteen-page-header-left">
                 <div className="canteen-page-name">{canteen.name}</div>
                 <div className="canteen-page-meta">
-                  <span>📍 {canteen.distance}</span>
-                  <span>🕐 {canteen.openTime}</span>
+                  <span><span aria-hidden="true">📍</span> {canteen.distance}</span>
+                  <span><span aria-hidden="true">🕐</span> {canteen.openTime}</span>
                 </div>
               </div>
               <div className="canteen-page-header-right">

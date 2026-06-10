@@ -23,8 +23,8 @@ const CanteenHeat: React.FC<CanteenHeatProps> = ({ canteens }) => {
             <div key={canteen.id} className="canteen-heat-card">
               <div className="canteen-heat-name">{canteen.name}</div>
               <div className="canteen-heat-info">
-                <span className="canteen-distance">📍 {canteen.distance}</span>
-                <span className="canteen-time">🕐 {canteen.openTime}</span>
+                <span className="canteen-distance"><span aria-hidden="true">📍</span> {canteen.distance}</span>
+                <span className="canteen-time"><span aria-hidden="true">🕐</span> {canteen.openTime}</span>
               </div>
               <div className="canteen-heat-flow">
                 {canteen.currentPeople != null && (
@@ -48,4 +48,4 @@ const CanteenHeat: React.FC<CanteenHeatProps> = ({ canteens }) => {
   );
 };
 
-export default CanteenHeat;
+export default React.memo(CanteenHeat);

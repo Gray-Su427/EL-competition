@@ -2,7 +2,6 @@ import React from 'react';
 import type { Dish } from '../types';
 
 interface RecommendCardProps {
-  suggestion: string;
   highlightDish: Dish | null;
   loading: boolean;
   onRecommend: () => void;
@@ -10,7 +9,6 @@ interface RecommendCardProps {
 
 /** 主推荐卡片 */
 const RecommendCard: React.FC<RecommendCardProps> = ({
-  suggestion,
   highlightDish,
   loading,
   onRecommend,
@@ -47,7 +45,7 @@ const RecommendCard: React.FC<RecommendCardProps> = ({
           onClick={onRecommend}
           disabled={loading}
         >
-          {loading ? '正在为你挑选...' : '帮我推荐 🍀'}
+          {loading ? '正在为你挑选…' : <>帮我推荐 <span aria-hidden="true">🍀</span></>}
         </button>
       </div>
     </div>

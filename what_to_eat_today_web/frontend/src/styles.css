@@ -1,3 +1,28 @@
+/* ========== 设计令牌 ========== */
+:root {
+  --color-primary: #FF7A3D;
+  --color-primary-light: #FF9A62;
+  --color-primary-dim: #e8652e;
+  --color-bg: #F8F4EA;
+  --color-surface: #fff;
+  --color-text: #333;
+  --color-text-secondary: #666;
+  --color-text-tertiary: #999;
+  --color-text-muted: #bbb;
+  --color-border: #eee;
+  --color-border-light: #F5F1E7;
+  --color-star: #ff9500;
+  --color-green: #8BC34A;
+  --color-green-bg: #E8F5E9;
+  --color-red: #F44336;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(255,122,61,0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+}
+
 /* ========== 全局样式 ========== */
 * {
   margin: 0;
@@ -7,8 +32,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background-color: #F8F4EA;
-  color: #333;
+  background-color: var(--color-bg);
+  color: var(--color-text);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -57,7 +82,7 @@ body {
 /* ========== 顶部区域 ========== */
 .header {
   padding: 16px 16px 20px;
-  background: linear-gradient(135deg, #FF7A3D 0%, #FF9A62 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
   border-radius: 0 0 24px 24px;
   position: relative;
 }
@@ -126,10 +151,14 @@ body {
 .search-input {
   flex: 1;
   border: none;
-  outline: none;
   background: transparent;
   font-size: 14px;
   color: #333;
+}
+.search-input:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .search-input::placeholder {
@@ -165,7 +194,7 @@ body {
 .recommend-title {
   font-size: 20px;
   font-weight: 700;
-  color: #FF7A3D;
+  color: var(--color-primary);
   margin-bottom: 6px;
 }
 
@@ -211,27 +240,27 @@ body {
 
 .highlight-tags {
   font-size: 11px;
-  color: #FF7A3D;
+  color: var(--color-primary);
   opacity: 0.85;
 }
 
 .highlight-price {
   font-size: 16px;
   font-weight: 700;
-  color: #FF7A3D;
+  color: var(--color-primary);
 }
 
 .recommend-btn {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #FF7A3D, #FF9A62);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
   color: #fff;
   border: none;
   border-radius: 12px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
 }
 
 .recommend-btn:hover:not(:disabled) {
@@ -266,7 +295,7 @@ body {
   border: none;
   border-radius: 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
@@ -365,7 +394,7 @@ body {
 .dish-price {
   font-size: 15px;
   font-weight: 700;
-  color: #FF7A3D;
+  color: var(--color-primary);
 }
 
 .dish-location {
@@ -406,7 +435,7 @@ body {
 
 .dish-tag {
   font-size: 11px;
-  color: #FF7A3D;
+  color: var(--color-primary);
   background: rgba(255,122,61,0.08);
   padding: 2px 8px;
   border-radius: 4px;
@@ -418,14 +447,14 @@ body {
 
 .dish-like-btn {
   padding: 8px 14px;
-  border: 1.5px solid #FF7A3D;
+  border: 1.5px solid var(--color-primary);
   background: transparent;
-  color: #FF7A3D;
+  color: var(--color-primary);
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
   white-space: nowrap;
 }
 
@@ -434,9 +463,9 @@ body {
 }
 
 .dish-like-btn.liked {
-  background: #FF7A3D;
+  background: var(--color-primary);
   color: #fff;
-  border-color: #FF7A3D;
+  border-color: var(--color-primary);
 }
 
 /* ========== 食堂热度 ========== */
@@ -546,7 +575,7 @@ body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
   position: relative;
   z-index: 1;
 }
@@ -596,7 +625,7 @@ body {
   justify-content: space-around;
   align-items: center;
   background: #fff;
-  padding: 8px 0 12px;
+  padding: 8px 0 calc(12px + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
   border-radius: 16px 16px 0 0;
   z-index: 100;
@@ -611,11 +640,11 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
 }
 
 .bottom-nav-item.active .bottom-nav-label {
-  color: #FF7A3D;
+  color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -679,10 +708,14 @@ body {
 .search-page-input {
   flex: 1;
   border: none;
-  outline: none;
   background: transparent;
   font-size: 14px;
   color: #333;
+}
+.search-page-input:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .search-page-input::placeholder {
@@ -701,7 +734,7 @@ body {
 .search-cancel-btn {
   background: none;
   border: none;
-  color: #FF7A3D;
+  color: var(--color-primary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -760,13 +793,13 @@ body {
   font-size: 13px;
   color: #555;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 .search-tag:hover {
   background: #FFF5EE;
-  color: #FF7A3D;
+  color: var(--color-primary);
 }
 
 .search-tag:active {
@@ -857,7 +890,7 @@ body {
 }
 
 .search-result-count strong {
-  color: #FF7A3D;
+  color: var(--color-primary);
 }
 
 .search-loading {
@@ -924,7 +957,7 @@ body {
 .ai-chat-back {
   background: none;
   border: none;
-  color: #FF7A3D;
+  color: var(--color-primary);
   font-size: 14px;
   cursor: pointer;
   padding: 4px 0;
@@ -998,17 +1031,17 @@ body {
 .ai-quick-btn {
   padding: 8px 14px;
   background: #fff;
-  border: 1px solid #FF7A3D33;
+  border: 1px solid var(--color-primary)33;
   border-radius: 20px;
   font-size: 13px;
-  color: #FF7A3D;
+  color: var(--color-primary);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
 }
 
 .ai-quick-btn:hover {
   background: #FFF5EE;
-  border-color: #FF7A3D;
+  border-color: var(--color-primary);
 }
 
 .ai-quick-btn:active {
@@ -1046,7 +1079,7 @@ body {
 }
 
 .ai-message.user .ai-message-bubble {
-  background: linear-gradient(135deg, #FF7A3D, #FF9A62);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
   color: #fff;
   border-bottom-right-radius: 4px;
 }
@@ -1118,7 +1151,10 @@ body {
   border-radius: 10px;
   font-size: 14px;
   color: #333;
-  outline: none;
+}
+.ai-chat-input:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .ai-chat-input::placeholder {
@@ -1131,14 +1167,14 @@ body {
 
 .ai-chat-send {
   padding: 10px 18px;
-  background: linear-gradient(135deg, #FF7A3D, #FF9A62);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
   color: #fff;
   border: none;
   border-radius: 10px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
   white-space: nowrap;
 }
 
@@ -1226,7 +1262,7 @@ body {
 
 .canteen-page-arrow.open {
   transform: rotate(90deg);
-  color: #FF7A3D;
+  color: var(--color-primary);
 }
 
 .canteen-page-dishes {
@@ -1464,7 +1500,7 @@ body {
 }
 
 .login-input:focus {
-  border-color: #ff6b35;
+  border-color: var(--color-primary);
 }
 
 .login-code-input {
@@ -1477,7 +1513,7 @@ body {
 .login-btn {
   width: 100%;
   padding: 12px;
-  background: #ff6b35;
+  background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -1495,7 +1531,7 @@ body {
 .login-resend {
   background: none;
   border: none;
-  color: #ff6b35;
+  color: var(--color-primary);
   font-size: 13px;
   cursor: pointer;
   padding: 4px 0;
@@ -1537,7 +1573,7 @@ body {
 }
 
 .user-page-login-btn {
-  background: #ff6b35;
+  background: var(--color-primary);
   color: #fff;
 }
 
@@ -1707,7 +1743,7 @@ body {
   display: inline-block;
   padding: 2px 8px;
   background: #FFF3EC;
-  color: #ff6b35;
+  color: var(--color-primary);
   border-radius: 12px;
   font-size: 12px;
 }
@@ -1716,7 +1752,7 @@ body {
   position: fixed;
   bottom: 80px;
   right: 20px;
-  background: #ff6b35;
+  background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 24px;
@@ -1788,7 +1824,7 @@ body {
 }
 
 .review-form-select:focus {
-  border-color: #ff6b35;
+  border-color: var(--color-primary);
 }
 
 .review-form-stars {
@@ -1823,7 +1859,7 @@ body {
 }
 
 .review-form-textarea:focus {
-  border-color: #ff6b35;
+  border-color: var(--color-primary);
 }
 
 .review-form-tags {
@@ -1840,13 +1876,13 @@ body {
   font-size: 13px;
   color: #666;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
 }
 
 .tag-btn.active {
   background: #FFF3EC;
-  border-color: #ff6b35;
-  color: #ff6b35;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .review-form-images {
@@ -1925,7 +1961,7 @@ body {
 .review-form-submit {
   flex: 2;
   padding: 12px;
-  background: #ff6b35;
+  background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -2016,7 +2052,7 @@ body {
 .dish-detail-price {
   font-size: 18px;
   font-weight: 700;
-  color: #ff6b35;
+  color: var(--color-primary);
 }
 
 .dish-detail-rating {
@@ -2063,7 +2099,7 @@ body {
   position: fixed;
   bottom: 80px;
   right: 20px;
-  background: #ff6b35;
+  background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 24px;
@@ -2094,12 +2130,12 @@ body {
   color: #666;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
 }
 
 .comments-tab.active {
-  background: #ff6b35;
-  border-color: #ff6b35;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
   color: #fff;
 }
 
@@ -2182,4 +2218,205 @@ body {
 
 .comments-dish-preview-user {
   color: #999;
+}
+
+/* ========== 触摸优化 ========== */
+button, a, .dish-card, .quick-entry-item, .search-tag, .suggestion-item,
+.comments-tab, .tag-btn, .star-btn, .comments-dish-card {
+  touch-action: manipulation;
+}
+
+/* ========== 弹层滚动限制 ========== */
+.comments-form-overlay {
+  overscroll-behavior: contain;
+}
+
+/* ========== 暗黑模式 ========== */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #1A1A2E;
+    color: #E8E8F0;
+  }
+  .app-container {
+    background-color: #1A1A2E;
+  }
+  .header {
+    background: linear-gradient(135deg, #D95C1A 0%, #E87A3D 100%);
+  }
+  .recommend-card {
+    background: linear-gradient(135deg, #2A2A45 0%, #252540 100%);
+  }
+  .highlight-dish, .dish-card, .canteen-heat-card, .ai-suggestion, .search-page,
+  .canteen-page-card, .user-page-section, .comment-card, .comments-dish-card,
+  .comments-form-wrapper, .ai-chat, .review-form-image-add, .search-suggestions,
+  .suggestion-item {
+    background-color: #252540;
+  }
+  .recommend-card-bg {
+    background: radial-gradient(circle, rgba(255,122,61,0.08), transparent 70%);
+  }
+  .dish-card, .canteen-heat-card, .canteen-page-card, .user-page-section,
+  .comment-card, .comments-dish-card, .recommend-card, .review-form-select,
+  .review-form-textarea, .comments-form-wrapper {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .bottom-nav {
+    background: #252540;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.3);
+  }
+  .search-page-header, .ai-chat-header, .ai-chat-input-area {
+    background: #252540;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .search-page-bar, .ai-chat-input {
+    background: #1E1E35;
+  }
+  .search-bar {
+    background: rgba(255,255,255,0.15);
+  }
+  .search-input, .search-page-input, .ai-chat-input {
+    color: #E8E8F0;
+  }
+  .search-input::placeholder, .search-page-input::placeholder, .ai-chat-input::placeholder {
+    color: #6666AA;
+  }
+  .dish-name, .highlight-name, .canteen-heat-name, .canteen-page-name,
+  .user-page-nickname, .recommend-title, .ai-title, .search-section-title,
+  .dish-detail-name, .login-title, .review-form-title, .search-no-results p,
+  .comments-header h2, .comment-card-user, .user-page-section-header,
+  .user-page-fav-name, .dish-detail-reviews-header h3,
+  .ai-chat-title, .ai-chat-welcome h3, .comments-dish-name,
+  .section-title {
+    color: #E8E8F0;
+  }
+  .dish-location, .dish-reviews, .canteen-heat-info, .user-page-hint,
+  .dish-detail-location, .dish-detail-review-count, .comments-empty-hint,
+  .comment-card-time, .canteen-page-meta, .user-page-count,
+  .search-result-count, .search-no-results-hint, .search-clear-history,
+  .search-clear-btn, .ai-chat-clear, .canteen-page-empty,
+  .dish-detail-no-reviews, .comments-loading, .comments-empty p,
+  .search-section p, .login-hint, .review-form-field label,
+  .user-page-empty p, .user-page-setting-value, .user-page-loading,
+  .comments-dish-count, .comments-dish-preview, .canteen-distance,
+  .canteen-time, .comments-empty-icon + p, .canteen-people, .canteen-occupancy,
+  .search-empty-guide p, .search-no-suggestion p, .review-form-error,
+  .login-error {
+    color: #9999B0;
+  }
+  .highlight-subtitle, .recommend-subtitle, .ai-desc, .ai-tip,
+  .dish-detail-meta .dish-rating, .dish-heat {
+    color: #BBBBCC !important;
+  }
+  .login-card, .review-form .review-form-select {
+    background: #252540;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  }
+  .login-input, .review-form-select, .review-form-textarea {
+    background: #1E1E35;
+    border-color: #3A3A55;
+    color: #E8E8F0;
+  }
+  .login-input:focus, .review-form-select:focus, .review-form-textarea:focus {
+    border-color: #FF8A4A;
+  }
+  .search-tag, .history-tag, .comment-tag, .review-tag,
+  .comments-tab, .tag-btn, .quick-entry-item, .star-btn {
+    background: #1E1E35;
+    color: #BBBBCC;
+  }
+  .search-tag:hover, .comments-tab:hover, .tag-btn:hover {
+    background: #2A2A45;
+    color: #FF8A4A;
+  }
+  .comments-tab.active {
+    background: #FF8A4A;
+    color: #fff;
+  }
+  .tag-btn.active {
+    background: #3A2A25;
+    border-color: #FF8A4A;
+    color: #FF8A4A;
+  }
+  .star-btn.active {
+    color: #FF9500;
+  }
+  .canteen-page-arrow {
+    color: #6666AA;
+  }
+  .canteen-page-header:hover {
+    background: #2A2A45;
+  }
+  .canteen-page-header:active {
+    background: #303050;
+  }
+  .suggestion-item {
+    border-bottom-color: #3A3A55;
+  }
+  .suggestion-item:hover {
+    background: #2A2A45;
+  }
+  .user-page-fav-item, .user-page-review-item {
+    background: #1E1E35;
+  }
+  .user-page-fav-remove {
+    color: #6666AA;
+  }
+  .user-page-fav-remove:hover {
+    color: #FF6B6B;
+  }
+  .user-page-setting-item {
+    border-bottom-color: #3A3A55;
+  }
+  .comment-card-images {
+    border-top-color: #3A3A55;
+  }
+  .comments-dish-preview {
+    border-top-color: #3A3A55;
+  }
+  .login-page {
+    background: linear-gradient(180deg, #1E1E35 0%, #1A1A2E 50%);
+  }
+  .ai-chat-messages, .search-page-body, .canteen-heat-list {
+    scrollbar-color: #3A3A55 #1A1A2E;
+  }
+  .ai-message.assistant .ai-message-bubble {
+    background: #252540;
+    color: #E8E8F0;
+  }
+  .ai-tip {
+    background: rgba(0,0,0,0.3);
+  }
+  .ai-suggestion {
+    background: linear-gradient(135deg, #1E3530 0%, #252540 100%);
+  }
+  .ai-suggestion::before {
+    background: radial-gradient(circle, rgba(139,195,74,0.1), transparent 70%);
+  }
+  .user-page-avatar {
+    background: linear-gradient(135deg, #2A2A45, #1E3530);
+  }
+  .dish-emoji {
+    background: linear-gradient(135deg, #2A2A45, #1E3530);
+  }
+  .user-page-logout-btn {
+    background: #3A3A55;
+    color: #BBBBDD;
+  }
+  .review-form-cancel {
+    background: #3A3A55;
+    color: #BBBBDD;
+  }
+  .review-form-image-add {
+    border-color: #3A3A55;
+    color: #6666AA;
+  }
+}
+
+/* ========== 动效偏好 ========== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

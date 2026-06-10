@@ -23,7 +23,7 @@ const QuickEntry: React.FC<QuickEntryProps> = ({ onAIClick }) => {
           className="quick-entry-item"
           onClick={entry.action}
         >
-          <span className="quick-entry-icon">{entry.icon}</span>
+          <span className="quick-entry-icon" aria-hidden="true">{entry.icon}</span>
           <span className="quick-entry-label">{entry.label}</span>
         </button>
       ))}

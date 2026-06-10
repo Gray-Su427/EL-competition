@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import type { Dish } from '../types';
 
 interface DishListProps {
   dishes: Dish[];
+  title?: string;
 }
 
 /** 今日推荐菜品列表 */
-const DishList: React.FC<DishListProps> = ({ dishes }) => {
-  const navigate = useNavigate();
+const DishList: React.FC<DishListProps> = ({ dishes, title = '今日推荐' }) => {
   // 记录哪些菜品已点击"想吃"
   const [liked, setLiked] = useState<Set<string>>(new Set());
 
   const handleLike = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
     e.stopPropagation();
     setLiked((prev) => {
       const next = new Set(prev);
@@ -43,9 +44,9 @@ const DishList: React.FC<DishListProps> = ({ dishes }) => {
 
   return (
     <div className="dish-list">
-      <h3 className="section-title">今日推荐</h3>
+      <h3 className="section-title">{title}</h3>
       {dishes.map((dish) => (
-        <div key={dish.id} className="dish-card" onClick={() => navigate(`/dish/${dish.id}`)} style={{ cursor: 'pointer' }}>
+        <Link key={dish.id} to={`/dish/${dish.id}`} className="dish-card">
           <div className="dish-card-left">
             <span className="dish-emoji">{dish.emoji}</span>
           </div>
@@ -83,10 +84,10 @@ const DishList: React.FC<DishListProps> = ({ dishes }) => {
               {liked.has(dish.id) ? '已选择 ✓' : '想吃'}
             </button>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
 };
 
-export default DishList;
+export default React.memo(DishList);

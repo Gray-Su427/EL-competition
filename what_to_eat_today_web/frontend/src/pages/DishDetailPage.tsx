@@ -17,10 +17,11 @@ function timeAgo(dateStr: string): string {
   const date = new Date(dateStr);
   const now = new Date();
   const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const rtf = new Intl.RelativeTimeFormat('zh-CN', { numeric: 'auto' });
   if (diff < 60) return '刚刚';
-  if (diff < 3600) return `${Math.floor(diff / 60)} 分钟前`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} 小时前`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)} 天前`;
+  if (diff < 3600) return rtf.format(-Math.floor(diff / 60), 'minute');
+  if (diff < 86400) return rtf.format(-Math.floor(diff / 3600), 'hour');
+  if (diff < 604800) return rtf.format(-Math.floor(diff / 86400), 'day');
   return date.toLocaleDateString('zh-CN');
 }
 
@@ -34,21 +35,22 @@ const DishDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
-  const loadData = () => {
+  useEffect(() => {
     if (!id) return;
+    let cancelled = false;
     Promise.all([
       getRecommendedDishes(),
       getReviews(id),
     ]).then(([dishes, revs]) => {
+      if (cancelled) return;
       const found = dishes.find((d) => d.id === id) || null;
       setDish(found);
       setReviews(revs);
     }).catch(() => {})
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    loadData();
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [id]);
 
   const handleReviewSuccess = () => {
@@ -59,7 +61,7 @@ const DishDetailPage: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="dish-detail-loading">加载中...</div>;
+    return <div className="dish-detail-loading">加载中…</div>;
   }
 
   if (!dish) {
@@ -79,7 +81,7 @@ const DishDetailPage: React.FC = () => {
     <div className="dish-detail-page">
       {/* 顶部返回 */}
       <div className="dish-detail-nav">
-        <button className="dish-detail-back" onClick={() => navigate(-1)}>← 返回</button>
+        <button className="dish-detail-back" onClick={() => navigate(-1)} aria-label="返回上一页">← 返回</button>
       </div>
 
       {/* 菜品信息卡 */}

@@ -20,7 +20,7 @@ const BottomNav: React.FC = () => {
           to={tab.path}
           className={`bottom-nav-item ${location.pathname === tab.path ? 'active' : ''}`}
         >
-          <span className="bottom-nav-icon">{tab.icon}</span>
+          <span className="bottom-nav-icon" aria-hidden="true">{tab.icon}</span>
           <span className="bottom-nav-label">{tab.label}</span>
         </Link>
       ))}
@@ -28,4 +28,4 @@ const BottomNav: React.FC = () => {
   );
 };
 
-export default BottomNav;
+export default React.memo(BottomNav);

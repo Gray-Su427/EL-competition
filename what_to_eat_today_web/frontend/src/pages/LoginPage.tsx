@@ -88,9 +88,13 @@ const LoginPage: React.FC = () => {
         {step === 'email' && (
           <>
             <p className="login-hint">使用南京大学邮箱登录</p>
+            <label htmlFor="login-email" style={{ display: 'none' }}>邮箱地址</label>
             <input
+              id="login-email"
               className="login-input"
               type="email"
+              name="email"
+              autoComplete="email"
               placeholder="你的南大邮箱 @nju.edu.cn"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -101,7 +105,7 @@ const LoginPage: React.FC = () => {
               onClick={handleSendCode}
               disabled={loading || !email.trim()}
             >
-              {loading ? '发送中...' : '发送验证码'}
+              {loading ? '发送中…' : '发送验证码'}
             </button>
           </>
         )}
@@ -109,11 +113,17 @@ const LoginPage: React.FC = () => {
         {step === 'code' && (
           <>
             <p className="login-hint">验证码已发送至 {email}</p>
+            <label htmlFor="login-code" style={{ display: 'none' }}>验证码</label>
             <input
+              id="login-code"
               className="login-input login-code-input"
               type="text"
+              name="code"
+              autoComplete="one-time-code"
+              inputMode="numeric"
               maxLength={6}
               placeholder="6 位验证码"
+              spellCheck={false}
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
               onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
@@ -124,7 +134,7 @@ const LoginPage: React.FC = () => {
               onClick={handleVerify}
               disabled={loading || code.length !== 6}
             >
-              {loading ? '验证中...' : '确认登录'}
+              {loading ? '验证中…' : '确认登录'}
             </button>
             <button
               className="login-resend"
@@ -139,9 +149,13 @@ const LoginPage: React.FC = () => {
         {step === 'nickname' && (
           <>
             <p className="login-hint">首次登录，给自己取个昵称吧</p>
+            <label htmlFor="login-nickname" style={{ display: 'none' }}>昵称</label>
             <input
+              id="login-nickname"
               className="login-input"
               type="text"
+              name="nickname"
+              autoComplete="name"
               maxLength={20}
               placeholder="你的昵称（1-20字）"
               value={nick}
@@ -154,7 +168,7 @@ const LoginPage: React.FC = () => {
               onClick={handleSetNickname}
               disabled={loading || !nick.trim()}
             >
-              {loading ? '保存中...' : '开始使用'}
+              {loading ? '保存中…' : '开始使用'}
             </button>
           </>
         )}

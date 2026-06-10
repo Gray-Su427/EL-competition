@@ -101,8 +101,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onSuccess, onCancel, preselecte
 
       {/* 选择菜品 */}
       <div className="review-form-field">
-        <label>菜品</label>
+        <label htmlFor="review-dish">菜品</label>
         <select
+          id="review-dish"
           value={dishId}
           onChange={(e) => setDishId(e.target.value)}
           className="review-form-select"
@@ -118,14 +119,15 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onSuccess, onCancel, preselecte
 
       {/* 评分 */}
       <div className="review-form-field">
-        <label>评分</label>
-        <div className="review-form-stars">
+        <label id="review-rating-label">评分</label>
+        <div className="review-form-stars" role="group" aria-labelledby="review-rating-label">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
               type="button"
               className={`star-btn ${star <= rating ? 'active' : ''}`}
               onClick={() => setRating(star)}
+              aria-label={`${star} 星`}
             >
               {star <= rating ? '★' : '☆'}
             </button>
@@ -135,10 +137,11 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onSuccess, onCancel, preselecte
 
       {/* 文字评价 */}
       <div className="review-form-field">
-        <label>评价内容（选填）</label>
+        <label htmlFor="review-content">评价内容（选填）</label>
         <textarea
+          id="review-content"
           className="review-form-textarea"
-          placeholder="分享你的用餐体验..."
+          placeholder="分享你的用餐体验…"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           maxLength={500}
@@ -148,8 +151,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onSuccess, onCancel, preselecte
 
       {/* 快捷标签 */}
       <div className="review-form-field">
-        <label>快捷标签</label>
-        <div className="review-form-tags">
+        <label id="review-tags-label">快捷标签</label>
+        <div className="review-form-tags" role="group" aria-labelledby="review-tags-label">
           {QUICK_TAGS.map((tag) => (
             <button
               key={tag}
@@ -165,8 +168,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onSuccess, onCancel, preselecte
 
       {/* 图片上传 */}
       <div className="review-form-field">
-        <label>图片（最多3张）</label>
-        <div className="review-form-images">
+        <label id="review-images-label">图片（最多3张）</label>
+        <div className="review-form-images" role="group" aria-labelledby="review-images-label">
           {previews.map((src, i) => (
             <div key={i} className="review-form-image-item">
               <img src={src} alt={`预览${i + 1}`} />
@@ -174,6 +177,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onSuccess, onCancel, preselecte
                 type="button"
                 className="review-form-image-remove"
                 onClick={() => removeImage(i)}
+                aria-label="删除图片"
               >
                 ✕
               </button>
@@ -210,7 +214,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onSuccess, onCancel, preselecte
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? '提交中...' : '发表评价'}
+          {loading ? '提交中…' : '发表评价'}
         </button>
       </div>
     </div>

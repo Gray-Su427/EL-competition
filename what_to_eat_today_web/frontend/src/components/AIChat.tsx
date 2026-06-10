@@ -27,6 +27,7 @@ const AIChat: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const idCounter = useRef(0);
 
   // 自动滚动到底部
   useEffect(() => {
@@ -51,13 +52,13 @@ const AIChat: React.FC = () => {
     if (!content || sending) return;
 
     const userMsg: DisplayMessage = {
-      id: Date.now().toString(),
+      id: (++idCounter.current).toString(),
       role: 'user',
       content,
     };
 
     const assistantMsg: DisplayMessage = {
-      id: (Date.now() + 1).toString(),
+      id: (++idCounter.current).toString(),
       role: 'assistant',
       content: '',
       loading: true,
@@ -134,14 +135,14 @@ const AIChat: React.FC = () => {
     <div className="ai-chat">
       {/* 头部 */}
       <div className="ai-chat-header">
-        <button className="ai-chat-back" onClick={() => navigate('/')}>
+        <button className="ai-chat-back" onClick={() => navigate('/')} aria-label="返回首页">
           ← 返回
         </button>
         <div className="ai-chat-title">
-          <span className="ai-chat-avatar">🤖</span>
+          <span className="ai-chat-avatar" aria-hidden="true">🤖</span>
           <span>吃什么小助手</span>
         </div>
-        <button className="ai-chat-clear" onClick={handleClear}>
+        <button className="ai-chat-clear" onClick={handleClear} aria-label="清空对话">
           清空
         </button>
       </div>
@@ -151,7 +152,7 @@ const AIChat: React.FC = () => {
         {/* 欢迎消息 */}
         {messages.length === 0 && (
           <div className="ai-chat-welcome">
-            <span className="ai-welcome-emoji">🍽️</span>
+            <span className="ai-welcome-emoji" aria-hidden="true">🍽️</span>
             <h3>你好！我是吃什么小助手</h3>
             <p>告诉我你的口味、忌口、饥饿程度，我来帮你推荐今天吃什么！</p>
             <div className="ai-quick-questions">
@@ -174,9 +175,9 @@ const AIChat: React.FC = () => {
             key={msg.id}
             className={`ai-message ${msg.role === 'user' ? 'user' : 'assistant'}`}
           >
-            {msg.role === 'assistant' && (
-              <span className="ai-message-avatar">🤖</span>
-            )}
+              {msg.role === 'assistant' && (
+                <span className="ai-message-avatar" aria-hidden="true">🤖</span>
+              )}
             <div className="ai-message-bubble">
               {msg.loading ? (
                 <div className="ai-typing">
@@ -199,7 +200,7 @@ const AIChat: React.FC = () => {
           ref={inputRef}
           type="text"
           className="ai-chat-input"
-          placeholder="告诉我你想吃什么..."
+          placeholder="告诉我你想吃什么…"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}

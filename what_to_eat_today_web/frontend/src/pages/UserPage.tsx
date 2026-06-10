@@ -41,13 +41,14 @@ const UserPage: React.FC = () => {
 
   useEffect(() => {
     if (favIds.length === 0) {
-      setDishesLoaded(true);
+      Promise.resolve().then(() => setDishesLoaded(true));
     } else {
       getRecommendedDishes()
         .then((dishes) => setAllDishes(dishes))
         .catch(() => {})
         .finally(() => setDishesLoaded(true));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ const UserPage: React.FC = () => {
         .catch(() => {})
         .finally(() => setReviewsLoaded(true));
     } else {
-      setReviewsLoaded(true);
+      Promise.resolve().then(() => setReviewsLoaded(true));
     }
   }, [isLoggedIn]);
 
@@ -107,7 +108,7 @@ const UserPage: React.FC = () => {
           )}
         </div>
         {!dishesLoaded ? (
-          <div className="user-page-loading">加载中...</div>
+          <div className="user-page-loading">加载中…</div>
         ) : favoriteDishes.length === 0 ? (
           <div className="user-page-empty">
             <span>📭</span>
@@ -128,6 +129,7 @@ const UserPage: React.FC = () => {
                 <button
                   className="user-page-fav-remove"
                   onClick={() => removeFavorite(dish.id)}
+                  aria-label="取消收藏"
                 >
                   ✕
                 </button>
@@ -146,7 +148,7 @@ const UserPage: React.FC = () => {
             <p>登录后查看你的评价</p>
           </div>
         ) : !reviewsLoaded ? (
-          <div className="user-page-loading">加载中...</div>
+          <div className="user-page-loading">加载中…</div>
         ) : myReviews.length === 0 ? (
           <div className="user-page-empty">
             <span>✍️</span>

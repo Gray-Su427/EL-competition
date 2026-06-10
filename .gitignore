@@ -76,7 +76,6 @@ coverage/
 __pycache__/
 *.py[cod]
 *.pyo
-*.db
 session.json
 
 # GSD Planning docs (tracked for project continuity)

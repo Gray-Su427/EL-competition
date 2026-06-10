@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { Dish, Canteen } from '../types';
 import { getCanteens, getRecommendedDishes, getTodaySuggestion } from '../mock/mockApi';
 import Header from '../components/Header';
@@ -13,13 +13,12 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [canteens, setCanteens] = useState<Canteen[]>([]);
-  const [suggestion, setSuggestion] = useState<string>('');
   const [highlightDish, setHighlightDish] = useState<Dish | null>(null);
-  const [searchKeyword, setSearchKeyword] = useState('');
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     const loadData = async () => {
       try {
         const [dishData, canteenData, suggestionData] = await Promise.all([
@@ -27,51 +26,46 @@ const HomePage: React.FC = () => {
           getCanteens(),
           getTodaySuggestion(),
         ]);
+        if (cancelled) return;
         setDishes(dishData);
         setCanteens(canteenData);
-        setSuggestion(suggestionData.text);
         setHighlightDish(suggestionData.highlightDish ?? null);
       } catch (error) {
-        console.error('加载数据失败:', error);
+        if (!cancelled) console.error('加载数据失败:', error);
       } finally {
-        setInitialLoading(false);
+        if (!cancelled) setInitialLoading(false);
       }
     };
     loadData();
+    return () => { cancelled = true; };
   }, []);
 
-  const handleRecommend = async () => {
+  const handleRecommend = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getTodaySuggestion();
-      setSuggestion(data.text);
       setHighlightDish(data.highlightDish ?? null);
     } catch (error) {
       console.error('获取推荐失败:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   if (initialLoading) {
     return (
       <div className="loading-screen">
-        <span className="loading-emoji">🍚</span>
-        <p>正在加载美味推荐...</p>
+        <span className="loading-emoji" aria-hidden="true">🍚</span>
+        <p>正在加载美味推荐…</p>
       </div>
     );
   }
 
   return (
     <>
-      <Header
-        searchKeyword={searchKeyword}
-        onSearchChange={setSearchKeyword}
-        onSearchFocus={() => navigate('/search')}
-      />
+      <Header onSearchFocus={() => navigate('/search')} />
       <RecommendCard
-        suggestion={suggestion}
-        highlightDish={highlightDish}
+          highlightDish={highlightDish}
         loading={loading}
         onRecommend={handleRecommend}
       />
