@@ -1275,6 +1275,8 @@ body {
 .canteen-page-dishes.open {
   max-height: 600px;
   opacity: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .canteen-page-dishes-inner {
