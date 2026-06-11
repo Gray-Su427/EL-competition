@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Dish } from '../types';
 import { getRecommendedDishes } from '../mock/mockApi';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { getMyReviews } from '../mock/mockApi';
 import type { Review } from '../types';
 
@@ -32,6 +33,7 @@ function StarRating({ rating }: { rating: number }) {
 const UserPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoggedIn, logout } = useAuth();
+  const { mode, setMode } = useTheme();
 
   const [favIds, setFavIds] = useState<string[]>(loadFavorites);
   const [allDishes, setAllDishes] = useState<Dish[]>([]);
@@ -190,6 +192,25 @@ const UserPage: React.FC = () => {
           <div className="user-page-setting-item">
             <span>服务校区</span>
             <span className="user-page-setting-value">南京大学 · 鼓楼校区</span>
+          </div>
+          <div className="user-page-setting-item" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8, borderBottom: 'none' }}>
+            <span>外观</span>
+            <div className="theme-selector">
+              {([
+                ['system', '跟随系统'],
+                ['light', '浅色'],
+                ['dark', '深色'],
+              ] as const).map(([value, label]) => (
+                <div
+                  key={value}
+                  className={`theme-selector-option${mode === value ? ' active' : ''}`}
+                  onClick={() => setMode(value)}
+                >
+                  {value === 'system' ? '🌓 ' : value === 'light' ? '☀️ ' : '🌙 '}
+                  {label}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

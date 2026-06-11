@@ -1452,6 +1452,59 @@ body {
   color: #999;
 }
 
+.theme-selector {
+  display: flex;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.theme-selector-option {
+  flex: 1;
+  padding: 8px 0;
+  font-size: 13px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.2s;
+  user-select: none;
+  border-right: 1px solid var(--color-border);
+}
+
+.theme-selector-option:last-child {
+  border-right: none;
+}
+
+.theme-selector-option:hover {
+  background: var(--color-border-light);
+}
+
+.theme-selector-option.active {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .theme-selector {
+  border-color: #3A3A55;
+  background: #1E1E35;
+}
+
+[data-theme="dark"] .theme-selector-option {
+  color: #9999B0;
+  border-right-color: #3A3A55;
+}
+
+[data-theme="dark"] .theme-selector-option:hover {
+  background: #2A2A45;
+}
+
+[data-theme="dark"] .theme-selector-option.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
 /* ========== Login Page ========== */
 
 .login-page {
@@ -2234,7 +2287,7 @@ button, a, .dish-card, .quick-entry-item, .search-tag, .suggestion-item,
 }
 
 /* ========== 暗黑模式 ========== */
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
   body {
     background-color: #1A1A2E;
     color: #E8E8F0;

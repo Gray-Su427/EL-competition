@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import SearchPage from './components/SearchPage';
@@ -13,7 +14,8 @@ import DishDetailPage from './pages/DishDetailPage';
 import './styles.css';
 
 const App: React.FC = () => (
-  <AuthProvider>
+  <ThemeProvider>
+    <AuthProvider>
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
@@ -29,6 +31,7 @@ const App: React.FC = () => (
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </AuthProvider>
+  </ThemeProvider>
 );
 
 export default App;
