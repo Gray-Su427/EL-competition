@@ -10,45 +10,53 @@ from database import SessionLocal
 from models import Canteen, Dish
 
 # Excel 文件路径（项目根目录）
-EXCEL_PATH = Path(__file__).resolve().parent.parent.parent / "食堂菜品统计表_补标签.xlsx"
+EXCEL_PATH = Path(__file__).resolve().parent.parent.parent / "食堂菜品统计表_已加标签.xlsx"
 
-# 菜系到 emoji 的简易映射
-CUISINE_EMOJI: dict[str, str] = {
-    "川菜": "🌶️",
+# 品类到 emoji 的映射
+CATEGORY_EMOJI: dict[str, str] = {
     "凉菜": "🥒",
-    "家常菜": "🍳",
-    "面食": "🍜",
-    "套餐饭": "🍱",
-    "砂锅": "🍲",
-    "铁板": "🥩",
-    "粥汤": "🥣",
-    "减脂餐": "🥗",
-    "小吃": "🥟",
-    "烧烤": "🍢",
-    "西式": "🍔",
-    "日韩": "🍣",
-    "麻辣烫": "🌶️",
     "卤味": "🦆",
+    "面食": "🍜",
+    "面条": "🍜",
+    "主食": "🍚",
     "早餐": "🥐",
+    "小吃": "🥟",
+    "套餐": "🍱",
+    "砂锅": "🍲",
+    "粥": "🥣",
+    "汤": "🥣",
+    "铁板": "🥩",
+    "烧烤": "🍢",
+    "减脂": "🥗",
+    "轻食": "🥗",
     "甜品": "🍰",
+    "饮品": "🧋",
+    "炒菜": "🍳",
+    "盖饭": "🍱",
+    "煎炸": "🍳",
+    "饼": "🥞",
+    "馒头": "🥐",
+    "包子": "🥟",
+    "饺子": "🥟",
 }
 
 
-def _parse_price(price_str: str) -> float:
-    """解析价格字符串，如 '16元' -> 16.0, '0.2元' -> 0.2"""
+def _parse_price(price_str: object) -> float:
+    """解析价格字符串，如 '16元' -> 16.0"""
     if pd.isna(price_str):
         return 0.0
     match = re.search(r"[\d.]+", str(price_str))
     return float(match.group()) if match else 0.0
 
 
-def _get_emoji(cuisine: str) -> str:
-    """根据菜系返回 emoji，无匹配则返回通用食物 emoji"""
-    if pd.isna(cuisine):
-        return "🍽️"
-    for key, emoji in CUISINE_EMOJI.items():
-        if key in str(cuisine):
+def _get_emoji(category: str | None, name: str) -> str:
+    """根据品类和菜名返回 emoji"""
+    text = f"{category or ''} {name}"
+    for key, emoji in CATEGORY_EMOJI.items():
+        if key in text:
             return emoji
+    if "肉" in name or "鸡" in name or "鱼" in name or "虾" in name:
+        return "🍖"
     return "🍽️"
 
 
@@ -56,7 +64,27 @@ def _safe_str(val: object) -> str | None:
     """将 pandas 值转为字符串，NaN 返回 None"""
     if pd.isna(val):
         return None
-    return str(val).strip()
+    s = str(val).strip()
+    return s if s and s != "无明显别名" else None
+
+
+def _build_tags(row: pd.Series) -> list[str]:
+    """从多个标签字段构建 tags 数组"""
+    tags: list[str] = []
+
+    # 从综合标签中取（用分号分隔）
+    comprehensive = _safe_str(row.get("自动-综合标签"))
+    if comprehensive:
+        parts = [t.strip() for t in comprehensive.replace("；", ";").split(";")]
+        tags.extend(p for p in parts if p and len(p) < 10)
+
+    # 补充关键独立字段
+    for field in ["自动-品类", "自动-荤素", "自动-口味标签", "自动-价格带"]:
+        val = _safe_str(row.get(field))
+        if val and val not in tags:
+            tags.append(val)
+
+    return tags[:8]  # 最多 8 个标签
 
 
 def seed_data() -> None:
@@ -80,37 +108,47 @@ def seed_data() -> None:
             session.commit()
             return
 
+        canteen_names = {"一食堂": "一食堂", "二食堂": "二食堂"}
         dishes: list[Dish] = []
         dish_id = 0
 
-        for sheet_name in ["一食堂", "二食堂"]:
-            df = pd.read_excel(EXCEL_PATH, sheet_name=sheet_name)
+        for sheet_name, canteen_name in canteen_names.items():
+            try:
+                df = pd.read_excel(EXCEL_PATH, sheet_name=sheet_name)
+            except ValueError:
+                print(f"[seed] Sheet '{sheet_name}' 不存在，跳过")
+                continue
 
             for _, row in df.iterrows():
                 dish_id += 1
-                name = _safe_str(row.get("菜名"))
+                # 新 Excel 用 "菜品" 列名
+                name = _safe_str(row.get("菜品")) or _safe_str(row.get("菜名"))
                 if not name:
                     continue
 
-                cuisine = _safe_str(row.get("菜系/类型"))
-                tags_raw = _safe_str(row.get("标签"))
-                tags_list = [t.strip() for t in tags_raw.split(",")] if tags_raw else []
+                cuisine = _safe_str(row.get("自动-菜系/风味"))
+                category = _safe_str(row.get("自动-品类"))
+                spice = _safe_str(row.get("自动-口味标签"))
+                ingredient = _safe_str(row.get("自动-主要食材"))
+                alias = _safe_str(row.get("自动-别名/常见叫法")) or _safe_str(row.get("别名"))
+
+                tags_list = _build_tags(row)
 
                 dishes.append(Dish(
                     id=f"d{dish_id}",
                     name=name,
                     price=_parse_price(row.get("价格")),
-                    canteen=_safe_str(row.get("食堂")) or sheet_name,
+                    canteen=canteen_name,
                     window=_safe_str(row.get("窗口")) or "综合窗口",
-                    rating=float(row["学生评分(1-5)"]) if pd.notna(row.get("学生评分(1-5)")) else 0.0,
+                    rating=float(row["学生-评分(1-5)"]) if pd.notna(row.get("学生-评分(1-5)")) else 0.0,
                     review_count=0,
                     tags=json.dumps(tags_list, ensure_ascii=False),
                     heat_status="正常",
-                    emoji=_get_emoji(cuisine),
+                    emoji=_get_emoji(category, name),
                     cuisine=cuisine,
-                    spice_level=_safe_str(row.get("辣度")),
-                    ingredient=_safe_str(row.get("主料/忌口")),
-                    alias=_safe_str(row.get("别名")),
+                    spice_level=spice,
+                    ingredient=ingredient,
+                    alias=alias,
                 ))
 
         session.add_all(dishes)

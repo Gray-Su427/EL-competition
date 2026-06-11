@@ -95,7 +95,7 @@ const LoginPage: React.FC = () => {
               type="email"
               name="email"
               autoComplete="email"
-              placeholder="你的南大邮箱 @nju.edu.cn"
+              placeholder="你的南大邮箱 @smail.nju.edu.cn"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendCode()}
