@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { chatStream, type ChatMessage } from '../services/aiService';
 
@@ -20,7 +19,6 @@ const QUICK_QUESTIONS = [
 ];
 
 const AIChat: React.FC = () => {
-  const navigate = useNavigate();
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -135,9 +133,6 @@ const AIChat: React.FC = () => {
     <div className="ai-chat">
       {/* 头部 */}
       <div className="ai-chat-header">
-        <button className="ai-chat-back" onClick={() => navigate('/')} aria-label="返回首页">
-          ← 返回
-        </button>
         <div className="ai-chat-title">
           <span className="ai-chat-avatar" aria-hidden="true">🤖</span>
           <span>吃什么小助手</span>

@@ -54,6 +54,12 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+.app-scroll-full {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ========== 加载状态 ========== */
 .loading-screen {
   display: flex;
@@ -280,7 +286,7 @@ body {
 /* ========== 快捷入口 ========== */
 .quick-entry {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   padding: 8px 16px 16px;
 }
@@ -931,18 +937,10 @@ body {
 
 /* ========== AI 对话页面 ========== */
 .ai-chat {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 390px;
-  max-width: 100%;
-  height: 100vh;
-  background: #F8F4EA;
-  z-index: 200;
   display: flex;
   flex-direction: column;
-  animation: slideIn 0.25s ease;
+  flex: 1;
+  background: #F8F4EA;
 }
 
 .ai-chat-header {

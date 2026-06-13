@@ -4,7 +4,7 @@ import { useLocation, Link } from 'react-router-dom';
 const TABS = [
   { icon: '🏠', label: '首页', path: '/' },
   { icon: '🏫', label: '食堂', path: '/canteens' },
-  { icon: '⭐', label: '推荐', path: '/recommended' },
+  { icon: '🤖', label: 'AI', path: '/ai' },
   { icon: '📝', label: '评价', path: '/comments' },
   { icon: '👤', label: '我的', path: '/user' },
 ];

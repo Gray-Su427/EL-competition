@@ -10,7 +10,6 @@ const QuickEntry: React.FC<QuickEntryProps> = ({ onAIClick }) => {
   const navigate = useNavigate();
   const entries = [
     { icon: '🏫', label: '附近食堂', action: () => navigate('/canteens') },
-    { icon: '🔥', label: '热门菜品', action: () => navigate('/recommended') },
     { icon: '🤖', label: 'AI 问问', action: onAIClick },
     { icon: '✍️', label: '我要评价', action: () => navigate('/comments') },
   ];
