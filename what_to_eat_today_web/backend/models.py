@@ -1,6 +1,16 @@
 """ORM models for Canteen, Dish, User, VerificationCode, and Review."""
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.sql import func
 
 from database import Base
@@ -60,6 +70,9 @@ class VerificationCode(Base):
 
 class Review(Base):
     __tablename__ = "reviews"
+    __table_args__ = (
+        UniqueConstraint("user_id", "dish_id", name="uq_reviews_user_dish"),
+    )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -69,3 +82,4 @@ class Review(Base):
     tags = Column(Text, nullable=True)  # JSON array
     images = Column(Text, nullable=True)  # JSON array of file paths
     created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, nullable=True)

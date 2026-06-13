@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import type { Dish, Review } from '../types';
-import { getRecommendedDishes, getReviews } from '../mock/mockApi';
-import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import ReviewForm from '../components/ReviewForm';
+import { useAuth } from '../contexts/AuthContext';
+import { getRecommendedDishes, getReviews } from '../mock/mockApi';
+import type { Dish, Review } from '../types';
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -28,7 +28,7 @@ function timeAgo(dateStr: string): string {
 const DishDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
 
   const [dish, setDish] = useState<Dish | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -38,26 +38,29 @@ const DishDetailPage: React.FC = () => {
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
-    Promise.all([
-      getRecommendedDishes(),
-      getReviews(id),
-    ]).then(([dishes, revs]) => {
-      if (cancelled) return;
-      const found = dishes.find((d) => d.id === id) || null;
-      setDish(found);
-      setReviews(revs);
-    }).catch(() => {})
+
+    Promise.all([getRecommendedDishes(), getReviews(id)])
+      .then(([dishes, revs]) => {
+        if (cancelled) return;
+        setDish(dishes.find((item) => item.id === id) ?? null);
+        setReviews(revs);
+      })
+      .catch(() => {})
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       });
-    return () => { cancelled = true; };
+
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   const handleReviewSuccess = () => {
     setShowForm(false);
-    if (id) {
-      getReviews(id).then(setReviews).catch(() => {});
-    }
+    if (!id) return;
+    getReviews(id).then(setReviews).catch(() => {});
   };
 
   if (loading) {
@@ -74,17 +77,20 @@ const DishDetailPage: React.FC = () => {
   }
 
   const avgRating = reviews.length > 0
-    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
+    : null;
+  const editingReview = user
+    ? reviews.find((review) => review.userId === user.id) ?? null
     : null;
 
   return (
     <div className="dish-detail-page">
-      {/* 顶部返回 */}
       <div className="dish-detail-nav">
-        <button className="dish-detail-back" onClick={() => navigate(-1)} aria-label="返回上一页">← 返回</button>
+        <button className="dish-detail-back" onClick={() => navigate(-1)} aria-label="返回上一页">
+          ← 返回
+        </button>
       </div>
 
-      {/* 菜品信息卡 */}
       <div className="dish-detail-card">
         <div className="dish-detail-emoji">{dish.emoji}</div>
         <div className="dish-detail-info">
@@ -107,7 +113,6 @@ const DishDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 评价列表 */}
       <div className="dish-detail-reviews">
         <div className="dish-detail-reviews-header">
           <h3>评价 ({reviews.length})</h3>
@@ -125,7 +130,10 @@ const DishDetailPage: React.FC = () => {
                   <span className="comment-card-user">{review.nickname}</span>
                   <StarRating rating={review.rating} />
                   {review.createdAt && (
-                    <span className="comment-card-time">{timeAgo(review.createdAt)}</span>
+                    <span className="comment-card-time">
+                      {timeAgo(review.createdAt)}
+                      {review.updatedAt ? <span className="comment-card-edited">已编辑</span> : null}
+                    </span>
                   )}
                 </div>
                 {review.content && (
@@ -140,8 +148,8 @@ const DishDetailPage: React.FC = () => {
                 )}
                 {review.images.length > 0 && (
                   <div className="comment-card-images">
-                    {review.images.map((src, i) => (
-                      <img key={i} src={src} alt={`评价图片${i + 1}`} className="comment-card-img" />
+                    {review.images.map((src, index) => (
+                      <img key={index} src={src} alt={`评价图片${index + 1}`} className="comment-card-img" />
                     ))}
                   </div>
                 )}
@@ -151,28 +159,28 @@ const DishDetailPage: React.FC = () => {
         )}
       </div>
 
-      {/* 写评价浮动按钮 */}
       <button
         className="dish-detail-fab"
         onClick={() => {
           if (!isLoggedIn) {
             navigate('/login');
-          } else {
-            setShowForm(true);
+            return;
           }
+          setShowForm(true);
         }}
       >
-        ✍️ 写评价
+        {editingReview ? '修改评价' : '写评价'}
       </button>
 
-      {/* 评价表单弹层 */}
       {showForm && (
         <div className="comments-form-overlay">
           <div className="comments-form-wrapper">
             <ReviewForm
+              key={`${id ?? 'dish'}-${editingReview?.id ?? 'new'}`}
               onSuccess={handleReviewSuccess}
               onCancel={() => setShowForm(false)}
               preselectedDishId={id}
+              editingReview={editingReview}
             />
           </div>
         </div>

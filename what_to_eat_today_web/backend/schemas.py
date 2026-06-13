@@ -82,6 +82,7 @@ class ReviewOut(BaseModel):
     tags: list[str] = []
     images: list[str] = []
     created_at: datetime | None = None
+    updated_at: datetime | None = None
 
     @field_validator("tags", mode="before")
     @classmethod

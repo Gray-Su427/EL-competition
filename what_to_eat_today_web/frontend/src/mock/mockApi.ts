@@ -132,3 +132,38 @@ export async function createReview(data: {
   }
   return res.json();
 }
+
+export async function updateReview(
+  reviewId: number,
+  data: {
+    rating: number;
+    content?: string;
+    tags?: string[];
+    keepImages: string[];
+    images?: File[];
+  }
+): Promise<Review> {
+  const formData = new FormData();
+  formData.append('rating', String(data.rating));
+  if (data.content) formData.append('content', data.content);
+  if (data.tags && data.tags.length > 0) {
+    formData.append('tags', JSON.stringify(data.tags));
+  }
+  formData.append('keep_images', JSON.stringify(data.keepImages));
+  if (data.images) {
+    for (const img of data.images) {
+      formData.append('images', img);
+    }
+  }
+
+  const res = await fetch(`/api/reviews/${reviewId}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || '修改失败');
+  }
+  return res.json();
+}

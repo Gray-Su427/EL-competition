@@ -42,4 +42,5 @@ export interface Review {
   tags: string[];
   images: string[];
   createdAt: string;
+  updatedAt?: string | null;
 }
