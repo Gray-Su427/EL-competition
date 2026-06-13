@@ -10,14 +10,16 @@ EL-competition/
 │   ├── frontend/          # React SPA 前端
 │   └── backend/           # FastAPI 后端
 ├── What_to_eat_today_app/ # Android WebView 壳应用
+├── ocr_to_sql/            # 智能识图工具（收集菜品数据）
 ├── 食堂菜品统计表_已加标签.xlsx  # 菜品种子数据（后端启动时自动导入）
+├── canteen_flow.py        # 食堂客流抓取脚本
 └── .planning/             # 项目规划文档
 ```
 
 ## 技术栈
 
 ### 前端
-- React 19 + TypeScript
+- React 19 + TypeScript 6
 - React Router DOM 7（客户端路由）
 - React Markdown（AI 回复渲染）
 - Vite 8（开发服务器 + 构建工具）
@@ -57,12 +59,14 @@ cp .env.example .env
 # 编辑 .env，填入各项配置（见下方环境变量说明）
 
 # 启动服务（首次启动会自动创建数据库和种子数据）
-python -m uvicorn main:app --port 8000
+start.bat
+# 或直接：
+python -m uvicorn main:app --host 0.0.0.0 --port 3000
 ```
 
-后端运行在 http://localhost:8000，Swagger 文档在 http://localhost:8000/docs
+后端运行在 http://localhost:3000，Swagger 文档在 http://localhost:3000/docs
 
-### 2. 启动前端
+### 2. 启动前端（开发模式）
 
 ```bash
 cd what_to_eat_today_web/frontend
@@ -74,11 +78,22 @@ npm install
 npm run dev
 ```
 
-前端运行在 http://localhost:5173，自动代理 `/api` 请求到后端。
+前端运行在 http://localhost:5173，Vite 自动代理 `/api` 和 `/static` 请求到后端（`http://localhost:3000`）。
 
-### 3. 打开浏览器
+### 3. 生产部署
 
-访问 http://localhost:5173 即可使用。
+```bash
+# 构建前端
+cd what_to_eat_today_web/frontend
+npm run build
+# 产物输出到 dist/
+
+# 启动后端（自动检测并 serve 前端静态文件）
+cd ../backend
+start.bat
+```
+
+生产环境后端统一托管前端静态文件和 API（同源，无 CORS 问题），访问 `http://<host>:3000` 即可。
 
 ## API 端点
 
@@ -92,7 +107,8 @@ npm run dev
 | GET | `/api/dishes/search?keyword=xxx` | 搜索菜品 |
 | GET | `/api/search/hot-keywords` | 获取热门搜索词 |
 | GET | `/api/search/suggestions?keyword=xxx` | 搜索联想 |
-| POST | `/api/ai/chat` | AI 对话代理（代理 MiMo API） |
+| POST | `/api/ai/chat` | AI 对话代理（非流式，代理 MiMo API） |
+| POST | `/api/ai/chat/stream` | AI 对话代理（SSE 流式） |
 
 ### 认证
 
@@ -108,6 +124,7 @@ npm run dev
 | 方法 | 端点 | 说明 |
 |------|------|------|
 | POST | `/api/reviews` | 创建评价，支持图片上传（需登录） |
+| PUT | `/api/reviews/{id}` | 更新评价（仅创建者可操作） |
 | GET | `/api/reviews?dish_id=xxx` | 获取某菜品的评价列表 |
 | GET | `/api/reviews/recent` | 获取最新评价 |
 | GET | `/api/reviews/mine` | 获取我的评价（需登录） |
@@ -136,73 +153,78 @@ npm run dev
 | `/canteens` | 食堂页 | 所有食堂详情和实时客流 |
 | `/recommended` | 推荐页 | 全部推荐菜品 |
 | `/comments` | 评价页 | 菜品评价列表、发表评价 |
-| `/user` | 个人页 | 登录状态、我的收藏、我的评价 |
-| `/login` | 登录页 | 邮箱验证码登录 |
-| `/search` | 搜索页 | 热门关键词、搜索联想、菜品搜索 |
-| `/ai` | AI 聊天 | 与"吃什么小助手"对话 |
+| `/dish/:id` | 菜品详情 | 菜品信息、评价列表、写评价入口 |
+| `/user` | 个人页 | 登录状态、本地收藏（localStorage）、我的评价、主题切换 |
+| `/login` | 登录页 | 邮箱验证码登录（3 步流程） |
+| `/search` | 搜索页 | 热门关键词、搜索历史、联想补全、菜品搜索 |
+| `/ai` | AI 聊天 | 与"吃什么小助手"对话（SSE 流式） |
 
 ## 后端目录结构
 
 ```
 what_to_eat_today_web/backend/
-├── main.py              # FastAPI 应用入口、lifespan、CORS、静态文件
-├── database.py          # SQLAlchemy 引擎和 SessionLocal
-├── models.py            # ORM 模型（Canteen, Dish, User, VerificationCode, Review）
-├── schemas.py           # Pydantic 响应模型（camelCase 别名）
-├── seed.py              # 种子数据初始化（从 Excel 导入）
-├── jwt_utils.py         # JWT 签发和验证
-├── auth_service.py      # 邮箱验证码发送和校验
+├── main.py                  # FastAPI 应用入口、lifespan、CORS、前端托管
+├── database.py              # SQLAlchemy 引擎和 SessionLocal
+├── models.py                # ORM 模型（Canteen, Dish, User, VerificationCode, Review）
+├── schemas.py               # Pydantic 响应模型（camelCase 别名）
+├── seed.py                  # 种子数据初始化（从 Excel 导入）
+├── jwt_utils.py             # JWT 签发和验证
+├── auth_service.py          # 邮箱验证码发送和校验
 ├── canteen_flow_service.py  # 食堂客流实时抓取（E-Mobile）
 ├── routes/
-│   ├── auth.py          # /api/auth/*（登录注册）
-│   ├── reviews.py       # /api/reviews/*（评价 CRUD + 图片上传）
-│   ├── canteens.py      # /api/canteens
-│   ├── dishes.py        # /api/dishes/*
-│   ├── suggestion.py    # /api/suggestion/today
-│   ├── search.py        # /api/search/*
-│   └── ai.py            # /api/ai/chat（MiMo 代理）
-├── static/uploads/      # 评价图片存储目录
+│   ├── auth.py              # /api/auth/*（登录注册）
+│   ├── reviews.py           # /api/reviews/*（评价 CRUD + 图片上传）
+│   ├── canteens.py          # /api/canteens
+│   ├── dishes.py            # /api/dishes/*
+│   ├── suggestion.py        # /api/suggestion/today
+│   ├── search.py            # /api/search/*
+│   └── ai.py                # /api/ai/chat（MiMo 代理，含 SSE 流式）
+├── static/uploads/          # 评价图片存储目录
 ├── tests/
-│   └── test_ai.py       # AI 端点测试
-├── requirements.txt     # Python 依赖
-├── .env.example         # 环境变量模板
-└── canteen.db           # SQLite 数据库（自动生成）
+│   ├── test_ai.py           # AI 端点测试
+│   └── test_reviews.py      # 评价端点测试
+├── requirements.txt         # Python 依赖
+├── .env.example             # 环境变量模板
+├── start.bat                # 启动脚本（0.0.0.0:3000）
+└── canteen.db               # SQLite 数据库（自动生成）
 ```
 
 ## 前端目录结构
 
 ```
 what_to_eat_today_web/frontend/src/
-├── App.tsx              # 路由配置 + AuthProvider
-├── main.tsx             # 入口
-├── types.ts             # TypeScript 类型（Canteen, Dish, Review 等）
+├── App.tsx                  # 路由配置 + ThemeProvider + AuthProvider
+├── main.tsx                 # 入口
+├── types.ts                 # TypeScript 类型（Canteen, Dish, Review 等）
 ├── contexts/
-│   └── AuthContext.tsx  # 全局认证状态
+│   ├── AuthContext.tsx      # 全局认证状态
+│   └── ThemeContext.tsx     # 主题切换（system / light / dark）
 ├── pages/
-│   ├── HomePage.tsx     # 首页
-│   ├── CanteensPage.tsx # 食堂页
-│   ├── RecommendedPage.tsx # 推荐页
-│   ├── CommentsPage.tsx # 评价页
-│   ├── UserPage.tsx     # 个人页
-│   └── LoginPage.tsx    # 登录页
+│   ├── HomePage.tsx         # 首页
+│   ├── CanteensPage.tsx     # 食堂页
+│   ├── RecommendedPage.tsx  # 推荐页
+│   ├── CommentsPage.tsx     # 评价页
+│   ├── DishDetailPage.tsx   # 菜品详情页
+│   ├── UserPage.tsx         # 个人页
+│   └── LoginPage.tsx        # 登录页
 ├── components/
-│   ├── AIChat.tsx       # AI 聊天
-│   ├── SearchPage.tsx   # 搜索页
-│   ├── ReviewForm.tsx   # 评价表单
-│   ├── Header.tsx       # 顶部栏
-│   ├── RecommendCard.tsx # 推荐卡片
-│   ├── DishList.tsx     # 菜品列表
-│   ├── CanteenHeat.tsx  # 食堂热度
-│   ├── QuickEntry.tsx   # 快捷入口
-│   ├── AISuggestion.tsx # AI 推荐卡片
-│   ├── Layout.tsx       # 页面布局
-│   └── BottomNav.tsx    # 底部导航
+│   ├── Layout.tsx           # 页面布局（Outlet + BottomNav）
+│   ├── BottomNav.tsx        # 底部导航（5 个 Tab）
+│   ├── Header.tsx           # 顶部栏（定位 + 问候 + 搜索框）
+│   ├── RecommendCard.tsx    # 今日推荐卡片
+│   ├── DishList.tsx         # 可复用的菜品卡片列表
+│   ├── CanteenHeat.tsx      # 食堂热度卡片
+│   ├── QuickEntry.tsx       # 快捷入口（4 个按钮）
+│   ├── AISuggestion.tsx     # AI 推荐入口卡片
+│   ├── AIChat.tsx           # AI 聊天页（SSE 流式）
+│   ├── SearchPage.tsx       # 搜索页（3 种模式：引导/联想/结果）
+│   └── ReviewForm.tsx       # 评价表单（含图片上传、快捷标签）
 ├── mock/
-│   └── mockApi.ts       # API 调用层（对接真实后端）
+│   └── mockApi.ts           # 真实 API 调用层（fetch）
 ├── services/
-│   ├── aiService.ts     # AI 聊天服务
-│   └── authService.ts   # 认证服务（登录/注册/JWT）
-└── styles.css           # 全局样式
+│   ├── aiService.ts         # AI 聊天服务（非流式 + SSE 流式）
+│   └── authService.ts       # 认证服务（邮箱验证码 / JWT）
+└── styles.css               # 全局样式（~1100 行，支持暗色主题）
 ```
 
 ## 环境变量
@@ -261,10 +283,14 @@ npm run build
 - **camelCase 响应**：Pydantic 模型使用 `alias_generator = to_camel`，后端字段是 snake_case，API 输出是 camelCase
 - **字符串 ID**：食堂和菜品使用字符串 ID（"c1", "d1"），非自增整数
 - **AI Key 安全**：API Key 只存在后端 .env 中，前端通过 `/api/ai/chat` 代理访问
+- **SSE 流式 AI**：`/api/ai/chat/stream` 使用 Server-Sent Events 实现打字机效果，前端通过 `ReadableStream` 逐 token 渲染
 - **邮箱验证码登录**：限 @nju.edu.cn 邮箱，验证码 5 分钟有效，JWT 7 天有效
-- **图片上传**：评价图片存 `backend/static/uploads/`，通过 `/static/uploads/` 访问
-- **食堂客流**：后台定时任务从 E-Mobile 抓取实时数据
+- **评价系统**：每个用户对同一菜品只能发表一条评价（`UNIQUE(user_id, dish_id)`），评价可以更新和删除图片
+- **图片上传**：评价图片存 `backend/static/uploads/`，通过 `/static/uploads/` 访问，支持多图上传
+- **食堂客流**：后台定时任务每 10 分钟从 E-Mobile 抓取实时数据
 - **同步 ORM + 异步 AI**：数据端点用同步 SQLAlchemy，AI 代理用 async httpx
+- **生产前端托管**：后端自动检测 `frontend/dist/` 并 serve 静态文件，生产环境前后端同源部署
+- **暗色主题**：前端支持 system / light / dark 三种模式，通过 CSS 自定义属性和 `data-theme` 切换
 
 ## 许可
 
