@@ -3,7 +3,6 @@ import type { Dish, Canteen } from '../types';
 import { getCanteens, getRecommendedDishes, getTodaySuggestion } from '../mock/mockApi';
 import Header from '../components/Header';
 import RecommendCard from '../components/RecommendCard';
-import QuickEntry from '../components/QuickEntry';
 import DishList from '../components/DishList';
 import CanteenHeat from '../components/CanteenHeat';
 import AISuggestion from '../components/AISuggestion';
@@ -69,9 +68,8 @@ const HomePage: React.FC = () => {
         loading={loading}
         onRecommend={handleRecommend}
       />
-      <QuickEntry onAIClick={() => navigate('/ai')} />
+      <CanteenHeat canteens={canteens} onCanteenClick={(id) => navigate(`/canteens?expand=${id}`)} />
       <DishList dishes={dishes.slice(0, 3)} />
-      <CanteenHeat canteens={canteens} />
       <AISuggestion onOpenChat={() => navigate('/ai')} />
     </>
   );

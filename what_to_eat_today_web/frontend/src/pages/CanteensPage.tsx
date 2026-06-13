@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import type { Canteen, Dish } from '../types';
 import { getCanteens, getRecommendedDishes } from '../mock/mockApi';
 
@@ -15,9 +16,10 @@ const heatColor: Record<string, string> = {
 };
 
 const CanteensPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [canteens, setCanteens] = useState<Canteen[]>([]);
   const [dishes, setDishes] = useState<Dish[]>([]);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(searchParams.get('expand'));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 

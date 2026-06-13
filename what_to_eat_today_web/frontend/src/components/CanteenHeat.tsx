@@ -3,10 +3,11 @@ import type { Canteen } from '../types';
 
 interface CanteenHeatProps {
   canteens: Canteen[];
+  onCanteenClick?: (id: string) => void;
 }
 
 /** 食堂热度 */
-const CanteenHeat: React.FC<CanteenHeatProps> = ({ canteens }) => {
+const CanteenHeat: React.FC<CanteenHeatProps> = ({ canteens, onCanteenClick }) => {
   const statusConfig: Record<string, { color: string; bg: string }> = {
     '空闲': { color: '#8BC34A', bg: '#E8F5E9' },
     '正常': { color: '#FF9800', bg: '#FFF3E0' },
@@ -20,7 +21,14 @@ const CanteenHeat: React.FC<CanteenHeatProps> = ({ canteens }) => {
         {canteens.map((canteen) => {
           const config = statusConfig[canteen.status];
           return (
-            <div key={canteen.id} className="canteen-heat-card">
+            <div
+              key={canteen.id}
+              className="canteen-heat-card"
+              role="button"
+              tabIndex={0}
+              onClick={() => onCanteenClick?.(canteen.id)}
+              onKeyDown={(e) => { if (e.key === 'Enter') onCanteenClick?.(canteen.id); }}
+            >
               <div className="canteen-heat-name">{canteen.name}</div>
               <div className="canteen-heat-info">
                 <span className="canteen-distance"><span aria-hidden="true">📍</span> {canteen.distance}</span>
