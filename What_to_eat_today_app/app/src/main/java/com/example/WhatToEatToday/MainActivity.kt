@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WebViewScreen(
-    url: String = "about:blank"
+    url: String = "http://111.229.182.32:3000"
 ) {
     var isLoading by remember { mutableStateOf(true) }
     var webView by remember { mutableStateOf<WebView?>(null) }
