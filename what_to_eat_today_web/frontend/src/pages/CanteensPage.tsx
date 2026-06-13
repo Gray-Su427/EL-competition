@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { Canteen, Dish } from '../types';
 import { getCanteens, getRecommendedDishes } from '../mock/mockApi';
 
@@ -16,12 +16,24 @@ const heatColor: Record<string, string> = {
 };
 
 const CanteensPage: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [canteens, setCanteens] = useState<Canteen[]>([]);
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(searchParams.get('expand'));
+  const [selectedWindow, setSelectedWindow] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // state → URL：展开/收起时同步到 URL
+  useEffect(() => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (expandedId) next.set('expand', expandedId);
+      else next.delete('expand');
+      return next;
+    }, { replace: true });
+  }, [expandedId, setSearchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -45,8 +57,30 @@ const CanteensPage: React.FC = () => {
   }, []);
 
   const toggleExpand = (id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id));
+    setExpandedId((prev) => {
+      if (prev === id) {
+        setSelectedWindow(null);
+        return null;
+      }
+      return id;
+    });
   };
+
+  // 展开食堂时自动选中第一个窗口
+  useEffect(() => {
+    if (!expandedId) {
+      setSelectedWindow(null);
+      return;
+    }
+    const canteen = canteens.find((c) => c.id === expandedId);
+    if (!canteen) return;
+    const windows = [...new Set(
+      dishes.filter((d) => d.canteen === canteen.name).map((d) => d.window)
+    )];
+    if (windows.length > 0) {
+      setSelectedWindow((prev) => prev && windows.includes(prev) ? prev : windows[0]);
+    }
+  }, [expandedId, canteens, dishes]);
 
   if (loading) {
     return (
@@ -107,38 +141,65 @@ const CanteensPage: React.FC = () => {
                     该食堂暂无菜品信息
                   </div>
                 ) : (
-                  canteenDishes.map((dish) => (
-                    <div key={dish.id} className="dish-card" style={{ margin: '0 0 8px' }}>
-                      <div className="dish-card-left">
-                        <span className="dish-emoji">{dish.emoji}</span>
-                      </div>
-                      <div className="dish-card-center">
-                        <div className="dish-name-row">
-                          <span className="dish-name">{dish.name}</span>
-                          <span className="dish-price">¥{dish.price}</span>
-                        </div>
-                        <div className="dish-location">{dish.window}</div>
-                        <div className="dish-meta">
-                          <span className="dish-rating">⭐ {dish.rating}</span>
-                          <span className="dish-reviews">{dish.reviewCount}条评价</span>
-                          <span
-                            className="dish-heat"
-                            style={{
-                              backgroundColor: heatColor[dish.heatStatus] + '22',
-                              color: heatColor[dish.heatStatus],
-                            }}
+                  <div className="canteen-page-content">
+                    {/* 左栏：窗口列表 */}
+                    <div className="canteen-page-windows">
+                      {[...new Set(canteenDishes.map((d) => d.window))].map((window) => {
+                        const count = canteenDishes.filter((d) => d.window === window).length;
+                        return (
+                          <button
+                            key={window}
+                            className={`canteen-page-window-item ${selectedWindow === window ? 'active' : ''}`}
+                            onClick={() => setSelectedWindow(window)}
                           >
-                            {dish.heatStatus}
-                          </span>
-                        </div>
-                        <div className="dish-tags">
-                          {dish.tags.map((tag) => (
-                            <span key={tag} className="dish-tag">{tag}</span>
-                          ))}
-                        </div>
-                      </div>
+                            <span className="canteen-page-window-name">{window}</span>
+                            <span className="canteen-page-window-count">{count}道</span>
+                          </button>
+                        );
+                      })}
                     </div>
-                  ))
+
+                    {/* 右栏：选中窗口的菜品 */}
+                    <div className="canteen-page-dish-list">
+                      {canteenDishes
+                        .filter((d) => d.window === selectedWindow)
+                        .map((dish) => (
+                          <div
+                            key={dish.id}
+                            className="dish-card"
+                            style={{ margin: '0 0 8px' }}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => navigate(`/dish/${dish.id}`)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/dish/${dish.id}`); }}
+                          >
+                            <div className="dish-card-left">
+                              <span className="dish-emoji">{dish.emoji}</span>
+                            </div>
+                            <div className="dish-card-center">
+                              <div className="dish-name-row">
+                                <span className="dish-name">{dish.name}</span>
+                                <span className="dish-price">¥{dish.price}</span>
+                              </div>
+                              <div className="dish-location">{dish.window}</div>
+                              <div className="dish-meta">
+                                <span className="dish-rating">⭐ {dish.rating}</span>
+                                <span className="dish-reviews">{dish.reviewCount}条评价</span>
+                                <span
+                                  className="dish-heat"
+                                  style={{
+                                    backgroundColor: heatColor[dish.heatStatus] + '22',
+                                    color: heatColor[dish.heatStatus],
+                                  }}
+                                >
+                                  {dish.heatStatus}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

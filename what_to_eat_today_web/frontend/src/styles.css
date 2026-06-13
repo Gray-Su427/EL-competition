@@ -1236,12 +1236,23 @@ body {
 .canteen-page-dishes.open {
   max-height: 600px;
   opacity: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
 }
 
 .canteen-page-dishes-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   padding: 0 14px 14px;
+}
+
+.canteen-page-content {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  min-height: 100px;
 }
 
 .canteen-page-empty {
@@ -1249,6 +1260,66 @@ body {
   padding: 20px 0;
   font-size: 13px;
   color: #bbb;
+}
+
+/* 食堂展开 — 左右分栏 */
+.canteen-page-windows {
+  width: 100px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.canteen-page-window-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 8px;
+  background: #F5F1E7;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.canteen-page-window-item:hover {
+  background: #FFEEE4;
+}
+
+.canteen-page-window-item.active {
+  background: linear-gradient(135deg, #FF7A3D, #FF9A62);
+  color: #fff;
+}
+
+.canteen-page-window-name {
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.canteen-page-window-item.active .canteen-page-window-name {
+  color: #fff;
+}
+
+.canteen-page-window-count {
+  font-size: 10px;
+  color: #999;
+}
+
+.canteen-page-window-item.active .canteen-page-window-count {
+  color: rgba(255,255,255,0.8);
+}
+
+.canteen-page-dish-list {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ========== 用户页 ========== */
