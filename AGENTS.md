@@ -22,7 +22,7 @@ What_to_eat_today_app/     — Android WebView 壳应用
 ## 后端 (`what_to_eat_today_web/backend/`)
 - FastAPI + SQLAlchemy + SQLite
 - 路由：`GET /api/canteens`、`GET /api/dishes/recommended`、`GET /api/dishes/search`、`GET /api/suggestion/today`、`GET /api/search/hot-keywords`、`GET /api/search/suggestions`、`POST /api/ai/chat`
-- 启动：`uvicorn main:app --reload --port 8000`
+- 启动：`uvicorn main:app --reload --port 3000`
 - 前端 `src/services/aiService.ts` 请求 `POST /api/ai/chat`（不包含硬编码 Key）
 
 ## Android (`What_to_eat_today_app/`)

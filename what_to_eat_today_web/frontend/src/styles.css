@@ -56,6 +56,7 @@ body {
 
 .app-scroll-full {
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -904,6 +905,7 @@ body {
   flex-direction: column;
   flex: 1;
   background: #F8F4EA;
+  padding-bottom: 70px;
 }
 
 .ai-chat-header {
@@ -1147,6 +1149,40 @@ body {
 .ai-chat-send:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* 语音输入按钮 */
+.ai-mic-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #F5F1E7;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.ai-mic-btn:hover {
+  background: #EBE5D8;
+}
+
+.ai-mic-btn:active {
+  transform: scale(0.95);
+}
+
+.ai-mic-btn.listening {
+  background: #FF6B6B;
+  animation: micPulse 1.2s infinite;
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 107, 107, 0); }
 }
 
 /* ========== 食堂页 ========== */
@@ -2489,6 +2525,9 @@ button, a, .dish-card, .canteen-heat-card, .search-tag, .suggestion-item,
   }
   .ai-chat-messages, .search-page-body, .canteen-heat-list {
     scrollbar-color: #3A3A55 #1A1A2E;
+  }
+  .ai-mic-btn {
+    background: #1E1E35;
   }
   .ai-message.assistant .ai-message-bubble {
     background: #252540;

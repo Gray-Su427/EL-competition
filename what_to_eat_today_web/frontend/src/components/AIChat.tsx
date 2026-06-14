@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { chatStream, type ChatMessage } from '../services/aiService';
+import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 
 interface DisplayMessage {
   id: string;
@@ -26,6 +27,7 @@ const AIChat: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const idCounter = useRef(0);
+  const { transcript, isListening, isSupported, startListening, stopListening } = useSpeechRecognition();
 
   // 自动滚动到底部
   useEffect(() => {
@@ -121,6 +123,23 @@ const AIChat: React.FC = () => {
     }
   };
 
+  // 语音输入切换
+  const handleMicToggle = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      setInput('');
+      startListening();
+    }
+  };
+
+  // 语音识别结果实时填入输入框
+  useEffect(() => {
+    if (isListening && transcript) {
+      setInput(transcript);
+    }
+  }, [transcript, isListening]);
+
   // 清空对话
   const handleClear = () => {
     abortRef.current?.abort();
@@ -201,6 +220,15 @@ const AIChat: React.FC = () => {
           onKeyDown={handleKeyDown}
           disabled={sending}
         />
+        {isSupported && (
+          <button
+            className={`ai-mic-btn ${isListening ? 'listening' : ''}`}
+            onClick={handleMicToggle}
+            aria-label={isListening ? '停止语音输入' : '语音输入'}
+          >
+            {isListening ? '🔴' : '🎤'}
+          </button>
+        )}
         <button
           className="ai-chat-send"
           onClick={() => handleSend()}
