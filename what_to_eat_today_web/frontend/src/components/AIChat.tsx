@@ -22,7 +22,7 @@ const QUICK_QUESTIONS = [
   '我今天想吃辣一点',
 ];
 
-const DEFAULT_INTRO = '说口味、忌口或今天状态，我来帮你快速缩小选择范围。';
+const DEFAULT_INTRO = '告诉我口味、忌口或今天状态，我来帮你快速缩小选择范围';
 
 function buildGuestSession(recommendedDishes: Dish[]): AiSessionInit {
   return {
@@ -35,16 +35,16 @@ function buildGuestSession(recommendedDishes: Dish[]): AiSessionInit {
 
 function getProfileHint(sessionInit: AiSessionInit | null, isLoggedIn: boolean): string {
   if (!isLoggedIn) {
-    return '登录后我会慢慢记住你的口味偏好。';
+    return '登录后我会生成专属饮食画像，慢慢记住你的口味偏好噢！';
   }
   if (!sessionInit) {
-    return '直接说今天想吃什么就行。';
+    return '直接说今天想吃什么就行';
   }
   if (sessionInit.profileStatus === 'empty') {
-    return '比如“我不吃香菜”或“今天想清淡一点”。';
+    return '比如“我不吃香菜”或“今天想清淡一点”';
   }
   if (sessionInit.profileStatus === 'partial') {
-    return '我已经记住一部分偏好，继续聊会更准。';
+    return '我已经记住一部分偏好，继续聊会更准哦！';
   }
   return '我会先按你的画像推荐，临时想换口味也可以直接说。';
 }
@@ -113,7 +113,7 @@ const AIChat: React.FC = () => {
         }
       } catch {
         if (!cancelled) {
-          setSessionError('推荐暂时没加载出来，但你还是可以直接问我今天吃什么。');
+          setSessionError('推荐暂时没加载出来，但你还是可以直接问我今天吃什么');
           setSessionInit(buildGuestSession([]));
         }
       } finally {
@@ -266,7 +266,7 @@ const AIChat: React.FC = () => {
 
             <div className="ai-profile-panel">
               <div className="ai-profile-panel-title">
-                <span>先给你 3 个方向</span>
+                <span>先给你 3 个推荐</span>
                 <span className="ai-profile-panel-subtitle">点开能看详情</span>
               </div>
 
@@ -299,7 +299,7 @@ const AIChat: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div className="ai-profile-loading">先告诉我你的口味，我马上开始推荐。</div>
+                <div className="ai-profile-loading">先告诉我你的口味，我马上开始推荐</div>
               )}
             </div>
           </div>
