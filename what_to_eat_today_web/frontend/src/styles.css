@@ -1498,6 +1498,7 @@ body {
   gap: 2px;
   padding: 10px 8px;
   background: #F5F1E7;
+  color: #333;
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -1526,7 +1527,7 @@ body {
 
 .canteen-page-window-count {
   font-size: 10px;
-  color: #999;
+  color: #888;
 }
 
 .canteen-page-window-item.active .canteen-page-window-count {
@@ -2677,6 +2678,24 @@ button, a, .dish-card, .canteen-heat-card, .search-tag, .suggestion-item,
   }
   .canteen-page-header:active {
     background: #303050;
+  }
+  .canteen-page-window-item {
+    background: #1E1E35;
+    color: #BBBBCC;
+  }
+  .canteen-page-window-item:hover {
+    background: #2A2A45;
+    color: #E8E8F0;
+  }
+  .canteen-page-window-item.active {
+    background: linear-gradient(135deg, #FF7A3D, #FF9A62);
+    color: #fff;
+  }
+  .canteen-page-window-count {
+    color: #6666AA;
+  }
+  .canteen-page-window-item.active .canteen-page-window-count {
+    color: rgba(255,255,255,0.7);
   }
   .suggestion-item {
     border-bottom-color: #3A3A55;
