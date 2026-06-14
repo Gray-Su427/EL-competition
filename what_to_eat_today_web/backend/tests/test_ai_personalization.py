@@ -189,6 +189,59 @@ def _mock_mimo_response(content: str = "按你的口味推荐清汤面。", stat
 
 
 @pytest.mark.asyncio
+async def test_extract_profile_patch_uses_structured_mimo_result(monkeypatch):
+    import routes.ai as ai_module
+
+    monkeypatch.setenv("MIMO_API_KEY", "test-key")
+    http_client = AsyncMock()
+    http_client.post = AsyncMock(
+        return_value=_mock_mimo_response(
+            json.dumps(
+                {
+                    "long_term_updates": {
+                        "disliked_ingredients": ["香菜"],
+                        "spice_preference": "avoid_spicy",
+                    },
+                    "context_updates": {},
+                    "summary_patch": "不吃香菜，长期不吃辣",
+                    "confidence": 0.94,
+                },
+                ensure_ascii=False,
+            )
+        )
+    )
+
+    patch = await ai_module._extract_profile_patch(
+        "我不吃香菜，也不太能吃辣",
+        http_client=http_client,
+        mimo_api_key="test-key",
+    )
+
+    assert patch["long_term_updates"]["disliked_ingredients"] == ["香菜"]
+    assert patch["long_term_updates"]["spice_preference"] == "avoid_spicy"
+    assert patch["summary_patch"] == "不吃香菜，长期不吃辣"
+    assert patch["confidence"] == pytest.approx(0.94)
+
+
+@pytest.mark.asyncio
+async def test_extract_profile_patch_falls_back_to_rules_when_mimo_invalid(monkeypatch):
+    import routes.ai as ai_module
+
+    monkeypatch.setenv("MIMO_API_KEY", "test-key")
+    http_client = AsyncMock()
+    http_client.post = AsyncMock(return_value=_mock_mimo_response("这不是 JSON"))
+
+    patch = await ai_module._extract_profile_patch(
+        "我不吃香菜",
+        http_client=http_client,
+        mimo_api_key="test-key",
+    )
+
+    assert patch["long_term_updates"]["disliked_ingredients"] == ["香菜"]
+    assert patch["confidence"] >= 0.75
+
+
+@pytest.mark.asyncio
 async def test_chat_updates_long_term_profile_only_on_explicit_preference(
     personalization_test_db,
     monkeypatch,
