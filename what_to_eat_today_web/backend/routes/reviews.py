@@ -13,6 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from database import SessionLocal
 from jwt_utils import get_current_user_id
 from models import Dish, Review, User
+from profile_service import update_profile_from_review
 from schemas import ReviewOut
 
 router = APIRouter(prefix="/api/reviews", tags=["reviews"])
@@ -180,6 +181,7 @@ async def create_review(
         db.add(review)
         db.commit()
         db.refresh(review)
+        update_profile_from_review(db, user_id, content, parsed_tags, rating)
         return _build_review_out(review, db)
     except IntegrityError as exc:
         db.rollback()
@@ -233,6 +235,8 @@ async def update_review(
 
         db.commit()
         db.refresh(review)
+        parsed_tags = _parse_json_list(tags)
+        update_profile_from_review(db, user_id, content, parsed_tags, rating)
 
         _delete_removed_images(existing_images, kept_images)
         return _build_review_out(review, db)

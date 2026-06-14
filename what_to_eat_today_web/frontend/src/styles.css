@@ -1,4 +1,4 @@
-/* ========== 设计令牌 ========== */
+/* ========== 璁捐浠ょ墝 ========== */
 :root {
   --color-primary: #FF7A3D;
   --color-primary-light: #FF9A62;
@@ -23,7 +23,7 @@
   --radius-xl: 20px;
 }
 
-/* ========== 全局样式 ========== */
+/* ========== 鍏ㄥ眬鏍峰紡 ========== */
 * {
   margin: 0;
   padding: 0;
@@ -37,7 +37,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ========== App 容器 ========== */
+/* ========== App 瀹瑰櫒 ========== */
 .app-container {
   max-width: 390px;
   margin: 0 auto;
@@ -59,9 +59,10 @@ body {
   height: 100dvh;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
-/* ========== 加载状态 ========== */
+/* ========== 鍔犺浇鐘舵€?========== */
 .loading-screen {
   display: flex;
   flex-direction: column;
@@ -86,7 +87,7 @@ body {
   color: #999;
 }
 
-/* ========== 顶部区域 ========== */
+/* ========== 椤堕儴鍖哄煙 ========== */
 .header {
   padding: 16px 16px 20px;
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
@@ -172,7 +173,7 @@ body {
   color: #bbb;
 }
 
-/* ========== 推荐卡片 ========== */
+/* ========== 鎺ㄨ崘鍗＄墖 ========== */
 .recommend-card {
   margin: 24px 16px 16px;
   border-radius: 20px;
@@ -284,7 +285,7 @@ body {
   cursor: not-allowed;
 }
 
-/* ========== 通用标题 ========== */
+/* ========== 閫氱敤鏍囬 ========== */
 .section-title {
   font-size: 17px;
   font-weight: 700;
@@ -293,7 +294,7 @@ body {
   padding: 0 16px;
 }
 
-/* ========== 菜品列表 ========== */
+/* ========== 鑿滃搧鍒楄〃 ========== */
 .dish-list {
   padding: 16px 0;
 }
@@ -438,7 +439,7 @@ body {
   border-color: var(--color-primary);
 }
 
-/* ========== 食堂热度 ========== */
+/* ========== 椋熷爞鐑害 ========== */
 .canteen-heat {
   padding: 16px 0;
 }
@@ -488,7 +489,7 @@ body {
   font-weight: 600;
 }
 
-/* ========== AI 建议卡片 ========== */
+/* ========== AI 寤鸿鍗＄墖 ========== */
 .ai-suggestion {
   margin: 8px 16px 16px;
   background: linear-gradient(135deg, #E8F5E9, #F1F8E9);
@@ -583,7 +584,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========== 底部导航栏 ========== */
+/* ========== 搴曢儴瀵艰埅鏍?========== */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -630,12 +631,12 @@ body {
   font-size: 11px;
 }
 
-/* ========== 底部留白 ========== */
+/* ========== 搴曢儴鐣欑櫧 ========== */
 .bottom-spacer {
   height: 20px;
 }
 
-/* ========== 搜索页面 ========== */
+/* ========== 鎼滅储椤甸潰 ========== */
 .search-page {
   position: fixed;
   top: 0;
@@ -718,7 +719,7 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* 搜索引导态 */
+/* 鎼滅储寮曞鎬?*/
 .search-section {
   margin-bottom: 24px;
 }
@@ -798,7 +799,7 @@ body {
   color: #999;
 }
 
-/* 搜索建议态 */
+/* 鎼滅储寤鸿鎬?*/
 .search-suggestions {
   background: #fff;
   border-radius: 12px;
@@ -848,7 +849,7 @@ body {
   color: #999;
 }
 
-/* 搜索结果态 */
+/* 鎼滅储缁撴灉鎬?*/
 .search-results {
   padding-bottom: 20px;
 }
@@ -899,11 +900,12 @@ body {
   color: #999;
 }
 
-/* ========== AI 对话页面 ========== */
+/* ========== AI 瀵硅瘽椤甸潰 ========== */
 .ai-chat {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
   background: #F8F4EA;
   padding-bottom: 70px;
 }
@@ -912,7 +914,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 10px 16px;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
@@ -950,55 +952,221 @@ body {
 .ai-chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 10px 12px 6px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   -webkit-overflow-scrolling: touch;
+  min-height: 0;
 }
 
-/* 欢迎消息 */
+/* 娆㈣繋娑堟伅 */
 .ai-chat-welcome {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px 0;
+}
+
+.ai-message-intro {
+  max-width: 100%;
+}
+
+.ai-message-intro .ai-message-bubble {
+  background: linear-gradient(180deg, #FFFDFC 0%, #FFF7F0 100%);
+  padding: 9px 11px;
+}
+
+.ai-message-intro .ai-message-bubble p {
+  color: #59606F;
+  line-height: 1.45;
+  font-size: 12px;
+}
+
+.ai-message-intro .ai-message-bubble .ai-message-subhint {
+  margin-top: 3px;
+  color: #8B7F70;
+  font-size: 11px;
+}
+
+.ai-profile-hint,
+.ai-profile-error,
+.ai-profile-loading {
+  width: 100%;
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  box-sizing: border-box;
+}
+
+.ai-profile-hint {
+  background: linear-gradient(180deg, rgba(255, 246, 236, 0.96) 0%, rgba(255, 239, 224, 0.96) 100%);
+  color: #9A4B20;
+}
+
+.ai-profile-error {
+  background: rgba(208, 75, 75, 0.1);
+  color: #A13E3E;
+}
+
+.ai-profile-loading {
+  background: #fff;
+  color: #8B7F6A;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.ai-profile-panel {
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(163, 132, 93, 0.1);
+  padding: 10px;
+  backdrop-filter: blur(8px);
+}
+
+.ai-profile-panel-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  padding: 0 4px;
+  color: #272B35;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ai-profile-panel-subtitle {
+  color: #8E8475;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.ai-profile-recommendations {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-profile-list-item {
+  width: 100%;
+  display: flex;
   align-items: center;
-  padding: 40px 20px;
-  text-align: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 16px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFF9F4 100%);
+  box-shadow: 0 8px 20px rgba(194, 154, 106, 0.1);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
 }
 
-.ai-welcome-emoji {
-  font-size: 48px;
-  margin-bottom: 12px;
+.ai-profile-list-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(194, 154, 106, 0.18);
 }
 
-.ai-chat-welcome h3 {
-  font-size: 17px;
-  color: #333;
-  margin-bottom: 8px;
-}
-
-.ai-chat-welcome p {
+.ai-profile-list-rank {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255, 122, 61, 0.12);
+  color: #D56F33;
   font-size: 13px;
-  color: #888;
-  line-height: 1.5;
-  margin-bottom: 20px;
+  font-weight: 800;
+}
+
+.ai-profile-list-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-profile-list-top,
+.ai-profile-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ai-profile-emoji {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: rgba(255, 122, 61, 0.1);
+}
+
+.ai-profile-name {
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #2E2A24;
+}
+
+.ai-profile-price {
+  flex-shrink: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.ai-profile-reason {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #D56F33;
+  line-height: 1.25;
+}
+
+.ai-profile-meta-row {
+  justify-content: flex-start;
+  gap: 6px;
+  margin-top: 3px;
+  font-size: 10px;
+  color: #8E8475;
+  flex-wrap: wrap;
 }
 
 .ai-quick-questions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 0 2px 2px;
+  scrollbar-width: none;
+}
+
+.ai-quick-questions::-webkit-scrollbar {
+  display: none;
+}
+
+.ai-quick-questions-docked {
+  margin-bottom: 6px;
 }
 
 .ai-quick-btn {
-  padding: 8px 14px;
+  flex: 0 0 auto;
+  padding: 6px 10px;
   background: #fff;
-  border: 1px solid var(--color-primary)33;
-  border-radius: 20px;
-  font-size: 13px;
+  border: 1px solid rgba(255, 122, 61, 0.16);
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: nowrap;
   color: var(--color-primary);
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(194, 154, 106, 0.08);
   transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
 }
 
@@ -1011,10 +1179,10 @@ body {
   transform: scale(0.95);
 }
 
-/* 消息气泡 */
+/* 娑堟伅姘旀场 */
 .ai-message {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   max-width: 85%;
 }
 
@@ -1028,16 +1196,16 @@ body {
 }
 
 .ai-message-avatar {
-  font-size: 24px;
+  font-size: 20px;
   flex-shrink: 0;
   align-self: flex-end;
 }
 
 .ai-message-bubble {
-  padding: 10px 14px;
-  border-radius: 14px;
-  font-size: 14px;
-  line-height: 1.6;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
   word-break: break-word;
 }
 
@@ -1054,7 +1222,7 @@ body {
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
-/* Markdown 内容重置 */
+/* Markdown 鍐呭閲嶇疆 */
 .ai-message-bubble p {
   margin: 0 0 0.4em;
 }
@@ -1069,7 +1237,7 @@ body {
   margin-bottom: 0.2em;
 }
 
-/* 打字动画 */
+/* 鎵撳瓧鍔ㄧ敾 */
 .ai-typing {
   display: flex;
   gap: 4px;
@@ -1097,22 +1265,31 @@ body {
   30% { transform: translateY(-6px); opacity: 1; }
 }
 
-/* 输入区域 */
+/* 杈撳叆鍖哄煙 */
 .ai-chat-input-area {
   display: flex;
-  gap: 10px;
-  padding: 12px 16px;
+  flex-direction: column;
+  gap: 0;
+  padding: 6px 12px 8px;
+  position: sticky;
+  bottom: 0;
   background: #fff;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+  z-index: 8;
+}
+
+.ai-chat-input-row {
+  display: flex;
+  gap: 6px;
 }
 
 .ai-chat-input {
   flex: 1;
-  padding: 10px 14px;
+  padding: 8px 12px;
   background: #F5F1E7;
   border: none;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 12px;
   color: #333;
 }
 .ai-chat-input:focus-visible {
@@ -1129,12 +1306,12 @@ body {
 }
 
 .ai-chat-send {
-  padding: 10px 18px;
+  padding: 8px 14px;
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
   color: #fff;
   border: none;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
@@ -1151,14 +1328,13 @@ body {
   cursor: not-allowed;
 }
 
-/* 语音输入按钮 */
 .ai-mic-btn {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: none;
   background: #F5F1E7;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1185,7 +1361,13 @@ body {
   50% { box-shadow: 0 0 0 8px rgba(255, 107, 107, 0); }
 }
 
-/* ========== 食堂页 ========== */
+@media (min-width: 768px) {
+  .ai-chat-welcome {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+}
+/* ========== 椋熷爞椤?========== */
 .canteen-page {
   padding-bottom: 8px;
 }
@@ -1298,7 +1480,7 @@ body {
   color: #bbb;
 }
 
-/* 食堂展开 — 左右分栏 */
+/* 椋熷爞灞曞紑 鈥?宸﹀彸鍒嗘爮 */
 .canteen-page-windows {
   width: 100px;
   flex-shrink: 0;
@@ -1358,7 +1540,7 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* ========== 用户页 ========== */
+/* ========== 鐢ㄦ埛椤?========== */
 .user-page {
   padding-bottom: 8px;
 }
@@ -1387,7 +1569,7 @@ body {
   font-weight: 400;
 }
 
-/* 资料 */
+/* 璧勬枡 */
 .user-page-profile {
   display: flex;
   align-items: center;
@@ -2367,18 +2549,18 @@ body {
   color: #999;
 }
 
-/* ========== 触摸优化 ========== */
+/* ========== 瑙︽懜浼樺寲 ========== */
 button, a, .dish-card, .canteen-heat-card, .search-tag, .suggestion-item,
 .comments-tab, .tag-btn, .star-btn, .comments-dish-card {
   touch-action: manipulation;
 }
 
-/* ========== 弹层滚动限制 ========== */
+/* ========== 寮瑰眰婊氬姩闄愬埗 ========== */
 .comments-form-overlay {
   overscroll-behavior: contain;
 }
 
-/* ========== 暗黑模式 ========== */
+/* ========== 鏆楅粦妯″紡 ========== */
 [data-theme="dark"] {
   body {
     background-color: #1A1A2E;
@@ -2562,7 +2744,7 @@ button, a, .dish-card, .canteen-heat-card, .search-tag, .suggestion-item,
   }
 }
 
-/* ========== 动效偏好 ========== */
+/* ========== 鍔ㄦ晥鍋忓ソ ========== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

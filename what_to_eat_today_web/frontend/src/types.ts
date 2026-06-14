@@ -23,6 +23,13 @@ export interface Dish {
   emoji: string;
 }
 
+export interface AiSessionInit {
+  profileStatus: 'empty' | 'partial' | 'ready';
+  profileSummary: string;
+  introMessage: string;
+  recommendedDishes: Dish[];
+}
+
 // 今日推荐文案
 export interface TodaySuggestion {
   text: string;

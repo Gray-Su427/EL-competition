@@ -107,3 +107,58 @@ class ReviewOut(BaseModel):
         if v is None:
             return []
         return v  # type: ignore[return-value]
+
+
+class UserProfileOut(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+        from_attributes=True,
+    )
+
+    profile_summary: str
+    liked_cuisines: list[str]
+    disliked_ingredients: list[str]
+    allergies: list[str]
+    dietary_rules: list[str]
+    spice_preference: str
+    budget_preference: str
+    preferred_canteens: list[str]
+    avoid_canteens: list[str]
+    favorite_tags: list[str]
+    avoid_tags: list[str]
+    profile_status: str
+
+    @field_validator(
+        "liked_cuisines",
+        "disliked_ingredients",
+        "allergies",
+        "dietary_rules",
+        "preferred_canteens",
+        "avoid_canteens",
+        "favorite_tags",
+        "avoid_tags",
+        mode="before",
+    )
+    @classmethod
+    def parse_profile_lists(cls, v: object) -> list[str]:
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except (json.JSONDecodeError, TypeError):
+                return []
+        if v is None:
+            return []
+        return v  # type: ignore[return-value]
+
+
+class AiSessionInitOut(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+    )
+
+    profile_status: str
+    profile_summary: str
+    intro_message: str
+    recommended_dishes: list[DishOut]

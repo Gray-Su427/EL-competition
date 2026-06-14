@@ -1,6 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { chatStream, type ChatMessage } from '../services/aiService';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { getRecommendedDishes } from '../mock/mockApi';
+import { chatStream, getAiSessionInit, type ChatMessage } from '../services/aiService';
+import type { AiSessionInit, Dish } from '../types';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 
 interface DisplayMessage {
@@ -11,102 +15,199 @@ interface DisplayMessage {
   streaming?: boolean;
 }
 
-// 快捷问题
 const QUICK_QUESTIONS = [
   '今天吃什么好？',
-  '有什么清淡的推荐？',
-  '赶时间吃什么快？',
-  '想吃辣的去哪？',
+  '想要清淡一点的推荐',
+  '赶时间吃什么更快？',
+  '我今天想吃辣一点',
 ];
 
+const DEFAULT_INTRO = '说口味、忌口或今天状态，我来帮你快速缩小选择范围。';
+
+function buildGuestSession(recommendedDishes: Dish[]): AiSessionInit {
+  return {
+    profileStatus: 'empty',
+    profileSummary: '',
+    introMessage: DEFAULT_INTRO,
+    recommendedDishes,
+  };
+}
+
+function getProfileHint(sessionInit: AiSessionInit | null, isLoggedIn: boolean): string {
+  if (!isLoggedIn) {
+    return '登录后我会慢慢记住你的口味偏好。';
+  }
+  if (!sessionInit) {
+    return '直接说今天想吃什么就行。';
+  }
+  if (sessionInit.profileStatus === 'empty') {
+    return '比如“我不吃香菜”或“今天想清淡一点”。';
+  }
+  if (sessionInit.profileStatus === 'partial') {
+    return '我已经记住一部分偏好，继续聊会更准。';
+  }
+  return '我会先按你的画像推荐，临时想换口味也可以直接说。';
+}
+
+function getDishReason(dish: Dish): string {
+  const topTags = dish.tags.slice(0, 2);
+  if (topTags.length > 0) {
+    return topTags.join(' · ');
+  }
+  return `${dish.canteen} · ${dish.window}`;
+}
+
 const AIChat: React.FC = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+  const { transcript, isListening, isSupported, startListening, stopListening } =
+    useSpeechRecognition();
+
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const [sessionInit, setSessionInit] = useState<AiSessionInit | null>(null);
+  const [sessionLoading, setSessionLoading] = useState(true);
+  const [sessionError, setSessionError] = useState('');
+
+  const liveInput = isListening && transcript ? transcript : input;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const idCounter = useRef(0);
-  const { transcript, isListening, isSupported, startListening, stopListening } = useSpeechRecognition();
 
-  // 自动滚动到底部
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // 打开时聚焦输入框
   useEffect(() => {
-    setTimeout(() => inputRef.current?.focus(), 100);
+    const timer = window.setTimeout(() => inputRef.current?.focus(), 100);
+    return () => window.clearTimeout(timer);
   }, []);
 
-  // 组件卸载时取消进行中的请求
   useEffect(() => {
     return () => {
       abortRef.current?.abort();
     };
   }, []);
 
-  // 发送消息（流式）
-  const handleSend = (text?: string) => {
-    const content = (text || input).trim();
-    if (!content || sending) return;
+  useEffect(() => {
+    let cancelled = false;
 
-    const userMsg: DisplayMessage = {
-      id: (++idCounter.current).toString(),
+    const loadSession = async () => {
+      setSessionLoading(true);
+      setSessionError('');
+
+      try {
+        if (isLoggedIn) {
+          const personalizedSession = await getAiSessionInit();
+          if (!cancelled && personalizedSession) {
+            setSessionInit(personalizedSession);
+            return;
+          }
+        }
+
+        const dishes = await getRecommendedDishes();
+        if (!cancelled) {
+          setSessionInit(buildGuestSession(dishes.slice(0, 3)));
+        }
+      } catch {
+        if (!cancelled) {
+          setSessionError('推荐暂时没加载出来，但你还是可以直接问我今天吃什么。');
+          setSessionInit(buildGuestSession([]));
+        }
+      } finally {
+        if (!cancelled) {
+          setSessionLoading(false);
+        }
+      }
+    };
+
+    void loadSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoggedIn]);
+
+  const refreshSession = async () => {
+    if (!isLoggedIn) {
+      return;
+    }
+
+    try {
+      const personalizedSession = await getAiSessionInit();
+      if (personalizedSession) {
+        setSessionInit(personalizedSession);
+      }
+    } catch {
+      // Keep current recommendations if refresh fails.
+    }
+  };
+
+  const handleSend = (text?: string) => {
+    const content = (text || liveInput).trim();
+    if (!content || sending) {
+      return;
+    }
+
+    const userMessage: DisplayMessage = {
+      id: String(++idCounter.current),
       role: 'user',
       content,
     };
-
-    const assistantMsg: DisplayMessage = {
-      id: (++idCounter.current).toString(),
+    const assistantMessage: DisplayMessage = {
+      id: String(++idCounter.current),
       role: 'assistant',
       content: '',
       loading: true,
       streaming: true,
     };
 
-    const updatedMessages = [...messages, userMsg, assistantMsg];
-    setMessages(updatedMessages);
+    setMessages((prev) => [...prev, userMessage, assistantMessage]);
     setInput('');
     setSending(true);
 
-    // 构建对话历史（不含当前 assistant 占位）
-    const history: ChatMessage[] = [...messages, userMsg].map((m) => ({
-      role: m.role,
-      content: m.content,
+    const history: ChatMessage[] = [...messages, userMessage].map((message) => ({
+      role: message.role,
+      content: message.content,
     }));
-
-    const msgId = assistantMsg.id;
+    const assistantId = assistantMessage.id;
 
     abortRef.current = chatStream(
       history,
-      // onToken: 逐 token 追加
       (token) => {
         setMessages((prev) =>
-          prev.map((m) =>
-            m.id === msgId
-              ? { ...m, content: m.content + token, loading: false }
-              : m
+          prev.map((message) =>
+            message.id === assistantId
+              ? { ...message, content: message.content + token, loading: false }
+              : message
           )
         );
       },
-      // onDone: 标记流式结束
       () => {
         setMessages((prev) =>
-          prev.map((m) =>
-            m.id === msgId ? { ...m, streaming: false } : m
+          prev.map((message) =>
+            message.id === assistantId
+              ? { ...message, loading: false, streaming: false }
+              : message
           )
         );
         setSending(false);
         abortRef.current = null;
+        void refreshSession();
       },
-      // onError: 显示错误
       (error) => {
         setMessages((prev) =>
-          prev.map((m) =>
-            m.id === msgId
-              ? { ...m, content: error || '抱歉，AI 服务暂时不可用，请稍后再试 😅', loading: false, streaming: false }
-              : m
+          prev.map((message) =>
+            message.id === assistantId
+              ? {
+                  ...message,
+                  content: error || 'AI 服务暂时不可用，请稍后再试。',
+                  loading: false,
+                  streaming: false,
+                }
+              : message
           )
         );
         setSending(false);
@@ -115,32 +216,22 @@ const AIChat: React.FC = () => {
     );
   };
 
-  // 按回车发送
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
       handleSend();
     }
   };
 
-  // 语音输入切换
   const handleMicToggle = () => {
     if (isListening) {
       stopListening();
-    } else {
-      setInput('');
-      startListening();
+      return;
     }
+    setInput('');
+    startListening();
   };
 
-  // 语音识别结果实时填入输入框
-  useEffect(() => {
-    if (isListening && transcript) {
-      setInput(transcript);
-    }
-  }, [transcript, isListening]);
-
-  // 清空对话
   const handleClear = () => {
     abortRef.current?.abort();
     abortRef.current = null;
@@ -150,7 +241,6 @@ const AIChat: React.FC = () => {
 
   return (
     <div className="ai-chat">
-      {/* 头部 */}
       <div className="ai-chat-header">
         <div className="ai-chat-title">
           <span className="ai-chat-avatar" aria-hidden="true">🤖</span>
@@ -161,46 +251,79 @@ const AIChat: React.FC = () => {
         </button>
       </div>
 
-      {/* 消息列表 */}
       <div className="ai-chat-messages">
-        {/* 欢迎消息 */}
-        {messages.length === 0 && (
+        {messages.length === 0 ? (
           <div className="ai-chat-welcome">
-            <span className="ai-welcome-emoji" aria-hidden="true">🍽️</span>
-            <h3>你好！我是吃什么小助手</h3>
-            <p>告诉我你的口味、忌口、饥饿程度，我来帮你推荐今天吃什么！</p>
-            <div className="ai-quick-questions">
-              {QUICK_QUESTIONS.map((q) => (
-                <button
-                  key={q}
-                  className="ai-quick-btn"
-                  onClick={() => handleSend(q)}
-                >
-                  {q}
-                </button>
-              ))}
+            <div className="ai-message assistant ai-message-intro">
+              <span className="ai-message-avatar" aria-hidden="true">🤖</span>
+              <div className="ai-message-bubble">
+                <p>{sessionInit?.introMessage || DEFAULT_INTRO}</p>
+                <p className="ai-message-subhint">{getProfileHint(sessionInit, isLoggedIn)}</p>
+              </div>
+            </div>
+
+            {sessionError ? <div className="ai-profile-error">{sessionError}</div> : null}
+
+            <div className="ai-profile-panel">
+              <div className="ai-profile-panel-title">
+                <span>先给你 3 个方向</span>
+                <span className="ai-profile-panel-subtitle">点开能看详情</span>
+              </div>
+
+              {sessionLoading ? (
+                <div className="ai-profile-loading">正在准备你的推荐...</div>
+              ) : sessionInit && sessionInit.recommendedDishes.length > 0 ? (
+                <div className="ai-profile-recommendations">
+                  {sessionInit.recommendedDishes.map((dish, index) => (
+                    <button
+                      key={dish.id}
+                      type="button"
+                      className="ai-profile-list-item"
+                      onClick={() => navigate(`/dish/${dish.id}`)}
+                    >
+                      <div className="ai-profile-list-rank">{index + 1}</div>
+                      <div className="ai-profile-list-main">
+                        <div className="ai-profile-list-top">
+                          <span className="ai-profile-name">{dish.name}</span>
+                          <span className="ai-profile-price">¥{dish.price}</span>
+                        </div>
+                        <div className="ai-profile-reason">{getDishReason(dish)}</div>
+                        <div className="ai-profile-meta-row">
+                          <span>{dish.canteen}</span>
+                          <span>{dish.window}</span>
+                          <span>★ {dish.rating.toFixed(1)}</span>
+                        </div>
+                      </div>
+                      <span className="ai-profile-emoji" aria-hidden="true">{dish.emoji}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="ai-profile-loading">先告诉我你的口味，我马上开始推荐。</div>
+              )}
             </div>
           </div>
-        )}
+        ) : null}
 
-        {/* 消息列表 */}
-        {messages.map((msg) => (
+        {messages.map((message) => (
           <div
-            key={msg.id}
-            className={`ai-message ${msg.role === 'user' ? 'user' : 'assistant'}`}
+            key={message.id}
+            className={`ai-message ${message.role === 'user' ? 'user' : 'assistant'}`}
           >
-              {msg.role === 'assistant' && (
-                <span className="ai-message-avatar" aria-hidden="true">🤖</span>
-              )}
+            {message.role === 'assistant' ? (
+              <span className="ai-message-avatar" aria-hidden="true">🤖</span>
+            ) : null}
             <div className="ai-message-bubble">
-              {msg.loading ? (
+              {message.loading ? (
                 <div className="ai-typing">
-                  <span></span><span></span><span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
                 </div>
-              ) : msg.role === 'assistant' ? (
-                <ReactMarkdown>{msg.content}</ReactMarkdown>
+              ) : message.role === 'assistant' ? (
+                <ReactMarkdown>{message.content}</ReactMarkdown>
               ) : (
-                msg.content
+                message.content
               )}
             </div>
           </div>
@@ -208,34 +331,49 @@ const AIChat: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 输入区域 */}
       <div className="ai-chat-input-area">
-        <input
-          ref={inputRef}
-          type="text"
-          className="ai-chat-input"
-          placeholder="告诉我你想吃什么…"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={sending}
-        />
-        {isSupported && (
+        {messages.length === 0 ? (
+          <div className="ai-quick-questions ai-quick-questions-docked">
+            {QUICK_QUESTIONS.map((question) => (
+              <button
+                key={question}
+                className="ai-quick-btn"
+                onClick={() => handleSend(question)}
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        <div className="ai-chat-input-row">
+          <input
+            ref={inputRef}
+            type="text"
+            className="ai-chat-input"
+            placeholder="比如：我不吃香菜，今天想吃快一点"
+            value={liveInput}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={sending}
+          />
+          {isSupported ? (
+            <button
+              className={`ai-mic-btn ${isListening ? 'listening' : ''}`}
+              onClick={handleMicToggle}
+              aria-label={isListening ? '停止语音输入' : '语音输入'}
+            >
+              {isListening ? '🔴' : '🎤'}
+            </button>
+          ) : null}
           <button
-            className={`ai-mic-btn ${isListening ? 'listening' : ''}`}
-            onClick={handleMicToggle}
-            aria-label={isListening ? '停止语音输入' : '语音输入'}
+            className="ai-chat-send"
+            onClick={() => handleSend()}
+            disabled={!liveInput.trim() || sending}
           >
-            {isListening ? '🔴' : '🎤'}
+            发送
           </button>
-        )}
-        <button
-          className="ai-chat-send"
-          onClick={() => handleSend()}
-          disabled={!input.trim() || sending}
-        >
-          发送
-        </button>
+        </div>
       </div>
     </div>
   );

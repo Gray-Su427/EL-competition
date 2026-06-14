@@ -1,297 +1,201 @@
-# 今天吃什么 — 校园餐饮推荐应用
+# 今天吃什么 - 校园餐饮推荐应用
 
-南京大学鼓楼校区校园餐饮推荐系统，帮助学生快速找到想吃的菜。包含食堂信息查询、菜品推荐、智能搜索、AI 对话、邮箱登录和菜品评价功能。
+面向南京大学鼓楼校区的校园餐饮推荐系统，帮助用户快速找到适合当前状态的菜品。项目包含食堂信息、菜品推荐、搜索、AI 对话、邮箱登录、评论系统，以及一阶段的用户画像能力。
 
 ## 项目结构
 
-```
+```text
 EL-competition/
 ├── what_to_eat_today_web/
-│   ├── frontend/          # React SPA 前端
-│   └── backend/           # FastAPI 后端
-├── What_to_eat_today_app/ # Android WebView 壳应用
-├── ocr_to_sql/            # 智能识图工具（收集菜品数据）
-├── 食堂菜品统计表_已加标签.xlsx  # 菜品种子数据（后端启动时自动导入）
-├── canteen_flow.py        # 食堂客流抓取脚本
-└── .planning/             # 项目规划文档
+│   ├── frontend/      # React + TypeScript + Vite 前端
+│   └── backend/       # FastAPI + SQLite 后端
+├── What_to_eat_today_app/  # Android WebView / 原生语音桥
+├── ocr_to_sql/             # 菜品数据整理工具
+├── canteen_flow.py         # 食堂客流抓取脚本
+└── 食堂菜品统计表_已加标签.xlsx  # 菜品种子数据
 ```
+
+## 当前能力
+
+### 核心业务
+
+- 食堂列表与实时热度展示
+- 菜品推荐、搜索建议、热门关键词
+- 邮箱验证码登录（JWT）
+- 菜品评论、图片上传、评论修改
+- 同一用户对同一菜品仅保留一条评论
+
+### AI 功能
+
+- AI 对话普通模式：`POST /api/ai/chat`
+- AI 对话流式模式：`POST /api/ai/chat/stream`
+- AI 会话初始化：`GET /api/ai/session/init`
+- Android 原生语音识别桥 + Web Speech 回退
+
+### 用户画像（当前为一阶段）
+
+- 登录用户进入 AI 页时返回画像状态、欢迎文案、3 道推荐菜
+- 从聊天内容中提取部分长期偏好与临时需求
+  - 例如：不吃香菜、想吃清淡、赶时间、想吃辣
+- 长期画像与临时上下文分开存储
+  - `user_profiles`
+  - `user_context_state`
+- 评论标签和内容会反哺用户画像
+- 推荐逻辑基于画像做规则打分排序
 
 ## 技术栈
 
 ### 前端
-- React 19 + TypeScript 6
-- React Router DOM 7（客户端路由）
-- React Markdown（AI 回复渲染）
-- Vite 8（开发服务器 + 构建工具）
+
+- React 19
+- TypeScript 6
+- Vite 8
+- React Router
+- React Markdown
 
 ### 后端
-- FastAPI（Web 框架）
-- SQLAlchemy 2.0（ORM）
-- SQLite（数据库）
-- httpx（异步 HTTP 客户端，用于 AI 代理）
-- pandas + openpyxl（Excel 种子数据导入）
-- PyJWT（认证令牌）
-- python-dotenv（环境变量管理）
-- python-multipart（文件上传）
+
+- FastAPI
+- SQLAlchemy 2.x
+- SQLite
+- httpx
+- PyJWT
+- python-dotenv
+- python-multipart
 
 ### Android
-- Kotlin + Jetpack Compose
-- WebView 加载前端页面
+
+- Kotlin
+- Jetpack Compose
+- WebView
+- 原生语音识别桥接
 
 ## 快速开始
 
-### 前置要求
+### 环境要求
 
 - Python 3.10+
 - Node.js 18+
 - npm
 
-### 1. 启动后端
+### 启动后端
 
 ```bash
 cd what_to_eat_today_web/backend
-
-# 安装依赖
 pip install -r requirements.txt
-
-# 配置环境变量
 cp .env.example .env
-# 编辑 .env，填入各项配置（见下方环境变量说明）
-
-# 启动服务（首次启动会自动创建数据库和种子数据）
-start.bat
-# 或直接：
 python -m uvicorn main:app --host 0.0.0.0 --port 3000
 ```
 
-后端运行在 http://localhost:3000，Swagger 文档在 http://localhost:3000/docs
+后端地址：
 
-### 2. 启动前端（开发模式）
+- API: `http://localhost:3000`
+- Swagger: `http://localhost:3000/docs`
+
+### 启动前端
 
 ```bash
 cd what_to_eat_today_web/frontend
-
-# 安装依赖
 npm install
-
-# 启动开发服务器
 npm run dev
 ```
 
-前端运行在 http://localhost:5173，Vite 自动代理 `/api` 和 `/static` 请求到后端（`http://localhost:3000`）。
+前端地址：
 
-### 3. 生产部署
+- `http://localhost:5173`
+
+开发模式下，Vite 会代理 `/api` 与 `/static` 到后端。
+
+### 生产构建
 
 ```bash
-# 构建前端
 cd what_to_eat_today_web/frontend
 npm run build
-# 产物输出到 dist/
-
-# 启动后端（自动检测并 serve 前端静态文件）
-cd ../backend
-start.bat
 ```
 
-生产环境后端统一托管前端静态文件和 API（同源，无 CORS 问题），访问 `http://<host>:3000` 即可。
+然后启动后端即可托管 `frontend/dist/`。
 
-## API 端点
+## 主要 API
 
 ### 数据查询
 
-| 方法 | 端点 | 说明 |
-|------|------|------|
-| GET | `/api/canteens` | 获取食堂列表（含实时客流） |
-| GET | `/api/dishes/recommended` | 获取推荐菜品 |
-| GET | `/api/suggestion/today` | 获取今日推荐文案 |
-| GET | `/api/dishes/search?keyword=xxx` | 搜索菜品 |
-| GET | `/api/search/hot-keywords` | 获取热门搜索词 |
-| GET | `/api/search/suggestions?keyword=xxx` | 搜索联想 |
-| POST | `/api/ai/chat` | AI 对话代理（非流式，代理 MiMo API） |
-| POST | `/api/ai/chat/stream` | AI 对话代理（SSE 流式） |
+- `GET /api/canteens`
+- `GET /api/dishes/recommended`
+- `GET /api/dishes/search?keyword=xxx`
+- `GET /api/suggestion/today`
+- `GET /api/search/hot-keywords`
+- `GET /api/search/suggestions?keyword=xxx`
 
 ### 认证
 
-| 方法 | 端点 | 说明 |
-|------|------|------|
-| POST | `/api/auth/send-code` | 发送邮箱验证码（限 @nju.edu.cn） |
-| POST | `/api/auth/verify` | 验证码校验，返回 JWT |
-| POST | `/api/auth/set-nickname` | 设置昵称（需登录） |
-| GET | `/api/auth/me` | 获取当前用户信息（需登录） |
+- `POST /api/auth/send-code`
+- `POST /api/auth/verify`
+- `POST /api/auth/set-nickname`
+- `GET /api/auth/me`
 
-### 评价
+### 评论
 
-| 方法 | 端点 | 说明 |
-|------|------|------|
-| POST | `/api/reviews` | 创建评价，支持图片上传（需登录） |
-| PUT | `/api/reviews/{id}` | 更新评价（仅创建者可操作） |
-| GET | `/api/reviews?dish_id=xxx` | 获取某菜品的评价列表 |
-| GET | `/api/reviews/recent` | 获取最新评价 |
-| GET | `/api/reviews/mine` | 获取我的评价（需登录） |
+- `POST /api/reviews`
+- `PUT /api/reviews/{id}`
+- `GET /api/reviews?dish_id=xxx`
+- `GET /api/reviews/recent`
+- `GET /api/reviews/mine`
 
-### AI 聊天请求格式
+### AI
 
-```json
-// 方式一：完整消息数组
-{
-  "messages": [
-    {"role": "user", "content": "今天吃什么"}
-  ]
-}
-
-// 方式二：简单字符串
-{
-  "message": "今天吃什么"
-}
-```
+- `GET /api/ai/session/init`
+- `POST /api/ai/chat`
+- `POST /api/ai/chat/stream`
 
 ## 前端页面
 
-| 路由 | 页面 | 功能 |
-|------|------|------|
-| `/` | 首页 | 今日推荐、菜品列表、食堂热度、快捷入口 |
-| `/canteens` | 食堂页 | 所有食堂详情和实时客流 |
-| `/recommended` | 推荐页 | 全部推荐菜品 |
-| `/comments` | 评价页 | 菜品评价列表、发表评价 |
-| `/dish/:id` | 菜品详情 | 菜品信息、评价列表、写评价入口 |
-| `/user` | 个人页 | 登录状态、本地收藏（localStorage）、我的评价、主题切换 |
-| `/login` | 登录页 | 邮箱验证码登录（3 步流程） |
-| `/search` | 搜索页 | 热门关键词、搜索历史、联想补全、菜品搜索 |
-| `/ai` | AI 聊天 | 与"吃什么小助手"对话（SSE 流式） |
+- `/` 首页
+- `/canteens` 食堂页
+- `/search` 搜索页
+- `/ai` AI 助手页
+- `/comments` 评论页
+- `/dish/:id` 菜品详情页
+- `/user` 个人页
+- `/login` 登录页
 
-## 后端目录结构
+## 关键实现说明
 
-```
-what_to_eat_today_web/backend/
-├── main.py                  # FastAPI 应用入口、lifespan、CORS、前端托管
-├── database.py              # SQLAlchemy 引擎和 SessionLocal
-├── models.py                # ORM 模型（Canteen, Dish, User, VerificationCode, Review）
-├── schemas.py               # Pydantic 响应模型（camelCase 别名）
-├── seed.py                  # 种子数据初始化（从 Excel 导入）
-├── jwt_utils.py             # JWT 签发和验证
-├── auth_service.py          # 邮箱验证码发送和校验
-├── canteen_flow_service.py  # 食堂客流实时抓取（E-Mobile）
-├── routes/
-│   ├── auth.py              # /api/auth/*（登录注册）
-│   ├── reviews.py           # /api/reviews/*（评价 CRUD + 图片上传）
-│   ├── canteens.py          # /api/canteens
-│   ├── dishes.py            # /api/dishes/*
-│   ├── suggestion.py        # /api/suggestion/today
-│   ├── search.py            # /api/search/*
-│   └── ai.py                # /api/ai/chat（MiMo 代理，含 SSE 流式）
-├── static/uploads/          # 评价图片存储目录
-├── tests/
-│   ├── test_ai.py           # AI 端点测试
-│   └── test_reviews.py      # 评价端点测试
-├── requirements.txt         # Python 依赖
-├── .env.example             # 环境变量模板
-├── start.bat                # 启动脚本（0.0.0.0:3000）
-└── canteen.db               # SQLite 数据库（自动生成）
+- 后端统一输出 camelCase JSON
+- AI Key 仅保存在后端环境变量中
+- AI 流式回复使用 SSE
+- 评论图片保存在 `backend/static/uploads/`
+- 菜品种子数据来自 Excel，后端启动时自动导入
+- AI 页面已接入语音输入，并处理移动端可视区域高度变化
+
+## 测试与校验
+
+### 后端测试
+
+```bash
+cd what_to_eat_today_web/backend
+python -m pytest tests -v
 ```
 
-## 前端目录结构
+### 前端检查
 
-```
-what_to_eat_today_web/frontend/src/
-├── App.tsx                  # 路由配置 + ThemeProvider + AuthProvider
-├── main.tsx                 # 入口
-├── types.ts                 # TypeScript 类型（Canteen, Dish, Review 等）
-├── contexts/
-│   ├── AuthContext.tsx      # 全局认证状态
-│   └── ThemeContext.tsx     # 主题切换（system / light / dark）
-├── pages/
-│   ├── HomePage.tsx         # 首页
-│   ├── CanteensPage.tsx     # 食堂页
-│   ├── RecommendedPage.tsx  # 推荐页
-│   ├── CommentsPage.tsx     # 评价页
-│   ├── DishDetailPage.tsx   # 菜品详情页
-│   ├── UserPage.tsx         # 个人页
-│   └── LoginPage.tsx        # 登录页
-├── components/
-│   ├── Layout.tsx           # 页面布局（Outlet + BottomNav）
-│   ├── BottomNav.tsx        # 底部导航（5 个 Tab）
-│   ├── Header.tsx           # 顶部栏（定位 + 问候 + 搜索框）
-│   ├── RecommendCard.tsx    # 今日推荐卡片
-│   ├── DishList.tsx         # 可复用的菜品卡片列表
-│   ├── CanteenHeat.tsx      # 食堂热度卡片
-│   ├── QuickEntry.tsx       # 快捷入口（4 个按钮）
-│   ├── AISuggestion.tsx     # AI 推荐入口卡片
-│   ├── AIChat.tsx           # AI 聊天页（SSE 流式）
-│   ├── SearchPage.tsx       # 搜索页（3 种模式：引导/联想/结果）
-│   └── ReviewForm.tsx       # 评价表单（含图片上传、快捷标签）
-├── mock/
-│   └── mockApi.ts           # 真实 API 调用层（fetch）
-├── services/
-│   ├── aiService.ts         # AI 聊天服务（非流式 + SSE 流式）
-│   └── authService.ts       # 认证服务（邮箱验证码 / JWT）
-└── styles.css               # 全局样式（~1100 行，支持暗色主题）
+```bash
+cd what_to_eat_today_web/frontend
+npm run build
+npm run lint
 ```
 
 ## 环境变量
 
-### 后端 (.env)
+后端 `.env` 常用项：
 
-| 变量 | 说明 | 必须 |
-|------|------|------|
-| `MIMO_API_KEY` | 小米 MiMo AI API Key | 是（AI 功能需要） |
-| `SMTP_HOST` | SMTP 服务器地址（如 smtp.163.com） | 是（登录功能需要） |
-| `SMTP_PORT` | SMTP 端口（SSL 用 465） | 是 |
-| `SMTP_USER` | 发件人邮箱地址 | 是 |
-| `SMTP_PASS` | 邮箱授权码（非登录密码） | 是 |
-| `JWT_SECRET` | JWT 签名密钥（随机字符串） | 是 |
-| `EMOBILE_SESSION_PATH` | E-Mobile session 文件路径（可选） | 否 |
+- `MIMO_API_KEY`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `JWT_SECRET`
+- `EMOBILE_SESSION_PATH`（可选）
 
-### 前端
+## 备注
 
-前端开发模式通过 Vite proxy 代理 `/api` 到后端，无需额外环境变量配置。
-
-## 开发指南
-
-### 运行测试
-
-```bash
-cd what_to_eat_today_web/backend
-pip install pytest pytest-asyncio httpx
-python -m pytest tests/ -v
-```
-
-### 构建前端
-
-```bash
-cd what_to_eat_today_web/frontend
-npm run build
-# 产物输出到 dist/
-```
-
-### 数据库
-
-- SQLite 文件 `canteen.db` 在后端首次启动时自动创建
-- 种子数据从项目根目录的 `食堂菜品统计表_已加标签.xlsx` 导入真实菜品数据（4 个鼓楼食堂）
-- **重要**：该 Excel 文件是必需的种子数据源，已纳入版本控制，clone 后即可使用
-- 如果 Excel 文件不存在，启动时会跳过菜品导入（只创建食堂，无菜品数据）
-- 删除 `canteen.db` 后重启会重新生成
-
-### 添加新 API 端点
-
-1. 在 `backend/routes/` 下创建新路由文件
-2. 使用 `APIRouter(prefix="/api/xxx", tags=["xxx"])`
-3. 在 `main.py` 中 `import` 并 `app.include_router()`
-4. 前端在 `mock/mockApi.ts` 中添加对应的 `fetch` 调用
-
-### 关键设计决策
-
-- **camelCase 响应**：Pydantic 模型使用 `alias_generator = to_camel`，后端字段是 snake_case，API 输出是 camelCase
-- **字符串 ID**：食堂和菜品使用字符串 ID（"c1", "d1"），非自增整数
-- **AI Key 安全**：API Key 只存在后端 .env 中，前端通过 `/api/ai/chat` 代理访问
-- **SSE 流式 AI**：`/api/ai/chat/stream` 使用 Server-Sent Events 实现打字机效果，前端通过 `ReadableStream` 逐 token 渲染
-- **邮箱验证码登录**：限 @nju.edu.cn 邮箱，验证码 5 分钟有效，JWT 7 天有效
-- **评价系统**：每个用户对同一菜品只能发表一条评价（`UNIQUE(user_id, dish_id)`），评价可以更新和删除图片
-- **图片上传**：评价图片存 `backend/static/uploads/`，通过 `/static/uploads/` 访问，支持多图上传
-- **食堂客流**：后台定时任务每 10 分钟从 E-Mobile 抓取实时数据
-- **同步 ORM + 异步 AI**：数据端点用同步 SQLAlchemy，AI 代理用 async httpx
-- **生产前端托管**：后端自动检测 `frontend/dist/` 并 serve 静态文件，生产环境前后端同源部署
-- **暗色主题**：前端支持 system / light / dark 三种模式，通过 CSS 自定义属性和 `data-theme` 切换
-
-## 许可
-
-项目用于南京大学课程竞赛提交。
+当前用户画像功能已经可用，适合一阶段演示与迭代验证；如果要进一步提升“个性化推荐”效果，后续还需要继续增强偏好提取精度、画像维度和推荐策略。

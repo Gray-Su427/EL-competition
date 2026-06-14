@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 declare global {
   interface Window {
@@ -32,7 +32,6 @@ declare global {
 export function useSpeechRecognition() {
   const [transcript, setTranscript] = useState('');
   const [isListening, setIsListening] = useState(false);
-  const [isSupported, setSupported] = useState(false);
   const recognitionRef = useRef<{
     start: () => void;
     stop: () => void;
@@ -40,39 +39,51 @@ export function useSpeechRecognition() {
   const finalRef = useRef('');
   const mountedRef = useRef(true);
 
+  const isSupported = Boolean(
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition ||
+    window.androidSpeech
+  );
+
   useEffect(() => {
     mountedRef.current = true;
-    if (window.SpeechRecognition || window.webkitSpeechRecognition || window.androidSpeech) {
-      setSupported(true);
-    }
-    return () => { mountedRef.current = false; };
+    return () => {
+      mountedRef.current = false;
+    };
   }, []);
 
   const cleanupCallbacks = useCallback(() => {
-    const w = window as any;
-    delete w.__speechOnInterim;
-    delete w.__speechOnResult;
-    delete w.__speechOnError;
-    delete w.__speechOnEnd;
+    const maybeWindow = window as Window & {
+      __speechOnInterim?: (text: string) => void;
+      __speechOnResult?: (text: string) => void;
+      __speechOnError?: () => void;
+      __speechOnEnd?: () => void;
+    };
+    delete maybeWindow.__speechOnInterim;
+    delete maybeWindow.__speechOnResult;
+    delete maybeWindow.__speechOnError;
+    delete maybeWindow.__speechOnEnd;
   }, []);
 
   const startWebSpeech = useCallback(() => {
-    const Ctor = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!Ctor) return;
+    const RecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!RecognitionCtor) {
+      return;
+    }
 
-    const recognition = new Ctor();
+    const recognition = new RecognitionCtor();
     recognition.lang = 'zh-CN';
     recognition.continuous = true;
     recognition.interimResults = true;
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       let interim = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const t = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalRef.current += t;
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const transcriptText = event.results[index][0].transcript;
+        if (event.results[index].isFinal) {
+          finalRef.current += transcriptText;
         } else {
-          interim += t;
+          interim += transcriptText;
         }
       }
       if (mountedRef.current) {
@@ -81,11 +92,15 @@ export function useSpeechRecognition() {
     };
 
     recognition.onerror = () => {
-      if (mountedRef.current) setIsListening(false);
+      if (mountedRef.current) {
+        setIsListening(false);
+      }
     };
 
     recognition.onend = () => {
-      if (mountedRef.current) setIsListening(false);
+      if (mountedRef.current) {
+        setIsListening(false);
+      }
     };
 
     recognitionRef.current = recognition;
@@ -102,26 +117,38 @@ export function useSpeechRecognition() {
   }, []);
 
   const startAndroidSpeech = useCallback(() => {
-    const w = window as any;
-    w.__speechOnInterim = (text: string) => {
-      if (mountedRef.current) setTranscript(text);
+    const maybeWindow = window as Window & {
+      __speechOnInterim?: (text: string) => void;
+      __speechOnResult?: (text: string) => void;
+      __speechOnError?: () => void;
+      __speechOnEnd?: () => void;
     };
-    w.__speechOnResult = (text: string) => {
+
+    maybeWindow.__speechOnInterim = (text: string) => {
+      if (mountedRef.current) {
+        setTranscript(text);
+      }
+    };
+    maybeWindow.__speechOnResult = (text: string) => {
       if (mountedRef.current) {
         setTranscript(text);
         finalRef.current = text;
       }
     };
-    w.__speechOnError = () => {
-      if (mountedRef.current) setIsListening(false);
+    maybeWindow.__speechOnError = () => {
+      if (mountedRef.current) {
+        setIsListening(false);
+      }
     };
-    w.__speechOnEnd = () => {
-      if (mountedRef.current) setIsListening(false);
+    maybeWindow.__speechOnEnd = () => {
+      if (mountedRef.current) {
+        setIsListening(false);
+      }
     };
 
     finalRef.current = '';
     setTranscript('');
-    window.androidSpeech!.startListening();
+    window.androidSpeech?.startListening();
     setIsListening(true);
   }, []);
 
@@ -134,25 +161,31 @@ export function useSpeechRecognition() {
   const startListening = useCallback(() => {
     if (window.androidSpeech) {
       startAndroidSpeech();
-    } else {
-      startWebSpeech();
+      return;
     }
-  }, [startWebSpeech, startAndroidSpeech]);
+    startWebSpeech();
+  }, [startAndroidSpeech, startWebSpeech]);
 
   const stopListening = useCallback(() => {
     if (window.androidSpeech) {
       stopAndroidSpeech();
-    } else {
-      stopWebSpeech();
+      return;
     }
-  }, [stopWebSpeech, stopAndroidSpeech]);
+    stopWebSpeech();
+  }, [stopAndroidSpeech, stopWebSpeech]);
 
   useEffect(() => {
     return () => {
       stopWebSpeech();
       cleanupCallbacks();
     };
-  }, [stopWebSpeech, cleanupCallbacks]);
+  }, [cleanupCallbacks, stopWebSpeech]);
 
-  return { transcript, isListening, isSupported, startListening, stopListening };
+  return {
+    transcript,
+    isListening,
+    isSupported,
+    startListening,
+    stopListening,
+  };
 }

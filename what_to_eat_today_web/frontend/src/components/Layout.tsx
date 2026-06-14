@@ -1,6 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import BottomNav from './BottomNav';
-import { useState, useEffect } from 'react';
 
 const Layout: React.FC = () => {
   const location = useLocation();
@@ -8,16 +8,18 @@ const Layout: React.FC = () => {
   const [viewportHeight, setViewportHeight] = useState<number | undefined>();
 
   useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
+    const viewport = window.visualViewport;
+    if (!viewport) {
+      return;
+    }
 
-    const onResize = () => {
-      setViewportHeight(vv.height);
+    const handleResize = () => {
+      setViewportHeight(viewport.height);
     };
 
-    onResize();
-    vv.addEventListener('resize', onResize);
-    return () => vv.removeEventListener('resize', onResize);
+    handleResize();
+    viewport.addEventListener('resize', handleResize);
+    return () => viewport.removeEventListener('resize', handleResize);
   }, []);
 
   return (

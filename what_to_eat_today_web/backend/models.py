@@ -57,6 +57,38 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now())
 
 
+class UserProfile(Base):
+    __tablename__ = "user_profiles"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    profile_summary = Column(Text, nullable=False, default="")
+    liked_cuisines = Column(Text, nullable=False, default="[]")
+    disliked_ingredients = Column(Text, nullable=False, default="[]")
+    allergies = Column(Text, nullable=False, default="[]")
+    dietary_rules = Column(Text, nullable=False, default="[]")
+    spice_preference = Column(String, nullable=False, default="unknown")
+    budget_preference = Column(String, nullable=False, default="unknown")
+    preferred_canteens = Column(Text, nullable=False, default="[]")
+    avoid_canteens = Column(Text, nullable=False, default="[]")
+    favorite_tags = Column(Text, nullable=False, default="[]")
+    avoid_tags = Column(Text, nullable=False, default="[]")
+    profile_status = Column(String, nullable=False, default="empty")
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class UserContextState(Base):
+    __tablename__ = "user_context_state"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    current_goal = Column(String, nullable=True)
+    current_budget = Column(String, nullable=True)
+    current_spice_need = Column(String, nullable=True)
+    current_speed_need = Column(String, nullable=True)
+    current_lightness_need = Column(String, nullable=True)
+    current_avoidance = Column(Text, nullable=False, default="[]")
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
 class VerificationCode(Base):
     __tablename__ = "verification_codes"
 
