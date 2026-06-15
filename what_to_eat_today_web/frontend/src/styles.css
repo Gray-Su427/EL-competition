@@ -1,4 +1,4 @@
-/* ========== 璁捐浠ょ墝 ========== */
+/* ========== 设计令牌 ========== */
 :root {
   --color-primary: #FF7A3D;
   --color-primary-light: #FF9A62;
@@ -23,7 +23,7 @@
   --radius-xl: 20px;
 }
 
-/* ========== 鍏ㄥ眬鏍峰紡 ========== */
+/* ========== 全局样式 ========== */
 * {
   margin: 0;
   padding: 0;
@@ -37,7 +37,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ========== App 瀹瑰櫒 ========== */
+/* ========== App 容器 ========== */
 .app-container {
   max-width: 390px;
   margin: 0 auto;
@@ -62,7 +62,7 @@ body {
   min-height: 0;
 }
 
-/* ========== 鍔犺浇鐘舵€?========== */
+/* ========== 加载状态 ========== */
 .loading-screen {
   display: flex;
   flex-direction: column;
@@ -87,7 +87,7 @@ body {
   color: #999;
 }
 
-/* ========== 椤堕儴鍖哄煙 ========== */
+/* ========== 顶部区域 ========== */
 .header {
   padding: 16px 16px 20px;
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
@@ -173,7 +173,7 @@ body {
   color: #bbb;
 }
 
-/* ========== 鎺ㄨ崘鍗＄墖 ========== */
+/* ========== 推荐卡片 ========== */
 .recommend-card {
   margin: 24px 16px 16px;
   border-radius: 20px;
@@ -285,7 +285,7 @@ body {
   cursor: not-allowed;
 }
 
-/* ========== 閫氱敤鏍囬 ========== */
+/* ========== 通用标题 ========== */
 .section-title {
   font-size: 17px;
   font-weight: 700;
@@ -294,7 +294,7 @@ body {
   padding: 0 16px;
 }
 
-/* ========== 鑿滃搧鍒楄〃 ========== */
+/* ========== 菜品列表 ========== */
 .dish-list {
   padding: 16px 0;
 }
@@ -439,7 +439,7 @@ body {
   border-color: var(--color-primary);
 }
 
-/* ========== 椋熷爞鐑害 ========== */
+/* ========== 食堂热度 ========== */
 .canteen-heat {
   padding: 16px 0;
 }
@@ -489,7 +489,7 @@ body {
   font-weight: 600;
 }
 
-/* ========== AI 寤鸿鍗＄墖 ========== */
+/* ========== AI 建议卡片 ========== */
 .ai-suggestion {
   margin: 8px 16px 16px;
   background: linear-gradient(135deg, #E8F5E9, #F1F8E9);
@@ -584,7 +584,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========== 搴曢儴瀵艰埅鏍?========== */
+/* ========== 底部导航栏 ========== */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -631,12 +631,12 @@ body {
   font-size: 11px;
 }
 
-/* ========== 搴曢儴鐣欑櫧 ========== */
+/* ========== 底部留白 ========== */
 .bottom-spacer {
   height: 20px;
 }
 
-/* ========== 鎼滅储椤甸潰 ========== */
+/* ========== 搜索页面 ========== */
 .search-page {
   position: fixed;
   top: 0;
@@ -719,7 +719,7 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* 鎼滅储寮曞鎬?*/
+/* 搜索引导性 */
 .search-section {
   margin-bottom: 24px;
 }
@@ -799,7 +799,7 @@ body {
   color: #999;
 }
 
-/* 鎼滅储寤鸿鎬?*/
+/* 搜索建议性 */
 .search-suggestions {
   background: #fff;
   border-radius: 12px;
@@ -849,7 +849,7 @@ body {
   color: #999;
 }
 
-/* 鎼滅储缁撴灉鎬?*/
+/* 搜索结果性 */
 .search-results {
   padding-bottom: 20px;
 }
@@ -900,7 +900,7 @@ body {
   color: #999;
 }
 
-/* ========== AI 瀵硅瘽椤甸潰 ========== */
+/* ========== AI 对话页面 ========== */
 .ai-chat {
   display: flex;
   flex-direction: column;
@@ -960,7 +960,7 @@ body {
   min-height: 0;
 }
 
-/* 娆㈣繋娑堟伅 */
+/* 欢迎消息 */
 .ai-chat-welcome {
   display: flex;
   flex-direction: column;
@@ -1179,7 +1179,7 @@ body {
   transform: scale(0.95);
 }
 
-/* 娑堟伅姘旀场 */
+/* 消息气泡 */
 .ai-message {
   display: flex;
   gap: 6px;
@@ -1222,7 +1222,7 @@ body {
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
-/* Markdown 鍐呭閲嶇疆 */
+/* Markdown 内容重置 */
 .ai-message-bubble p {
   margin: 0 0 0.4em;
 }
@@ -1237,7 +1237,7 @@ body {
   margin-bottom: 0.2em;
 }
 
-/* 鎵撳瓧鍔ㄧ敾 */
+/* 打字动画 */
 .ai-typing {
   display: flex;
   gap: 4px;
@@ -1265,7 +1265,7 @@ body {
   30% { transform: translateY(-6px); opacity: 1; }
 }
 
-/* 杈撳叆鍖哄煙 */
+/* 输入区域 */
 .ai-chat-input-area {
   display: flex;
   flex-direction: column;
@@ -1367,7 +1367,7 @@ body {
     margin: 0 auto;
   }
 }
-/* ========== 椋熷爞椤?========== */
+/* ========== 食堂页 ========== */
 .canteen-page {
   padding-bottom: 8px;
 }
@@ -1480,7 +1480,7 @@ body {
   color: #bbb;
 }
 
-/* 椋熷爞灞曞紑 鈥?宸﹀彸鍒嗘爮 */
+/* 食堂展开 — 左右分栏 */
 .canteen-page-windows {
   width: 100px;
   flex-shrink: 0;
@@ -1541,7 +1541,7 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* ========== 鐢ㄦ埛椤?========== */
+/* ========== 用户页 ========== */
 .user-page {
   padding-bottom: 8px;
 }
@@ -1570,7 +1570,7 @@ body {
   font-weight: 400;
 }
 
-/* 璧勬枡 */
+/* 资料 */
 .user-page-profile {
   display: flex;
   align-items: center;
@@ -2550,18 +2550,18 @@ body {
   color: #999;
 }
 
-/* ========== 瑙︽懜浼樺寲 ========== */
+/* ========== 触控优化 ========== */
 button, a, .dish-card, .canteen-heat-card, .search-tag, .suggestion-item,
 .comments-tab, .tag-btn, .star-btn, .comments-dish-card {
   touch-action: manipulation;
 }
 
-/* ========== 寮瑰眰婊氬姩闄愬埗 ========== */
+/* ========== 弹层滚动限制 ========== */
 .comments-form-overlay {
   overscroll-behavior: contain;
 }
 
-/* ========== 鏆楅粦妯″紡 ========== */
+/* ========== 暗黑模式 ========== */
 [data-theme="dark"] {
   body {
     background-color: #1A1A2E;
@@ -2763,7 +2763,7 @@ button, a, .dish-card, .canteen-heat-card, .search-tag, .suggestion-item,
   }
 }
 
-/* ========== 鍔ㄦ晥鍋忓ソ ========== */
+/* ========== 动效偏好 ========== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
